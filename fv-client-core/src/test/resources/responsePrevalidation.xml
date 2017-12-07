@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<respuesta>
+  <fecha>2017-11-30T17:14:06</fecha>
+  <codigo-respuesta>1</codigo-respuesta>
+  <codigo-error/>
+  <mensaje-error/>
+  <respuesta-maf-prevalidacion>
+    <evaluacion>
+      <transaccion-id>9194802</transaccion-id>
+      <alertas>
+        <alerta>EMAIL_CONTIENE_PALABRA_DICCIONARIO</alerta>
+        <alerta>EMAIL_PROVEEDOR_GRATUITO</alerta>
+        <alerta>EMAIL_CONTIENE_NUMEROS</alerta>
+        <alerta>EMAIL_NO_COINCIDE_CON_NOMBRE</alerta>
+        <alerta>TC_INTERNACIONAL</alerta>
+        <alerta>IP_INTERNACIONAL</alerta>
+      </alertas>
+      <acciones>
+        <accion>DETENER</accion>
+      </acciones>
+      <transacciones-similares>114</transacciones-similares>
+      <filtros>
+        <filtro>
+          <nombre-regla>monitor_telefono [MONITOREAR]</nombre-regla>
+          <nombre>Teléfono Oficina</nombre>
+          <valor>12345678</valor>
+          <valor-configuracion>12345678</valor-configuracion>
+          <operador>IGUAL</operador>
+        </filtro>
+        <filtro>
+          <nombre-regla>det_cedula</nombre-regla>
+          <nombre>Documento Comprador</nombre>
+          <valor>53140140</valor>
+          <valor-configuracion>53140140</valor-configuracion>
+          <operador>IGUAL</operador>
+        </filtro>
+      </filtros>
+      <analisis-heuristico>
+        <puntaje>0.00</puntaje>
+        <puntaje-email>0.04</puntaje-email>
+      </analisis-heuristico>
+      <listas-de-control>
+        <lista-blanca>
+          <coincide>false</coincide>
+          <parametro/>
+        </lista-blanca>
+        <lista-negra>
+          <coincide>true</coincide>
+          <parametro>correoElectronico</parametro>
+        </lista-negra>
+        <autorizacion-temporal>
+          <coincide>false</coincide>
+          <parametro/>
+        </autorizacion-temporal>
+      </listas-de-control>
+      <banco-emisor>
+        <codigo-iso-pais>US</codigo-iso-pais>
+        <banco>WELLS FARGO</banco>
+        <telefono>8008693557</telefono>
+      </banco-emisor>
+      <direccion-ip-proxy>false</direccion-ip-proxy>
+      <isp>DoD Network Information Center</isp>
+      <ubicacion>
+        <codigo-iso-pais>US</codigo-iso-pais>
+        <nombre-pais>United States</nombre-pais>
+        <region>VA</region>
+        <ciudad>Virginia Beach</ciudad>
+        <codigo-postal>23459</codigo-postal>
+        <latitud>36.9205</latitud>
+        <longitud>-76.0192</longitud>
+        <codigo-area-metropolitano>0</codigo-area-metropolitano>
+        <codigo-area-telefono>0</codigo-area-telefono>
+      </ubicacion>
+      <tiempo-evaluacion>2141</tiempo-evaluacion>
+      <codigo-error/>
+      <mensaje-error/>
+    </evaluacion>
+    <decision>1</decision>
+  </respuesta-maf-prevalidacion>
+</respuesta>

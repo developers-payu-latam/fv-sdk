@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<respuesta>
+  <fecha>2017-12-04T10:09:10</fecha>
+  <codigo-respuesta>2</codigo-respuesta>
+  <codigo-error>1007</codigo-error>
+  <mensaje-error>Error consultando el estado de la transacción</mensaje-error>
+  <respuesta-maf-consulta-estado>
+    <transaccion-id>456602622111</transaccion-id>
+    <codigo-respuesta>2</codigo-respuesta>
+    <mensaje-error>La transacción con id 456602622111 y cliente 2 no se pudo localizar en el sistema antifraude</mensaje-error>
+  </respuesta-maf-consulta-estado>
+</respuesta>
