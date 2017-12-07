@@ -1,0 +1,44 @@
+target/
+.settings/
+test-output/
+.classpath
+.project
+
+# Global/IntelliJ.gitignore
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# Global/OSX.gitignore
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+
+
+# Thumbnails
+._*
+
+# Files that might appear on external disk
+.Spotlight-V100
+.Trashes
+
+*.class
+*~
+*.jar
+*.war
+*.ear
+*.sw?
+*.classpath
+.gh-pages
+.idea
+.pmd
+.project
+.settings
+doc
+hs_err*.log
+target
+reports
+Test.java
+/bin
