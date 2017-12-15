@@ -12,11 +12,14 @@ import com.payulatam.fraudvault.model.response.FraudvaultPrevalidationResponse;
 import com.payulatam.fraudvault.model.response.FraudvaultQueryStateResponse;
 import com.payulatam.fraudvault.model.response.FraudvaultUpdateStateResponse;
 
+import lombok.Data;
+
 /**
  * Interface that define the methods to implement for a Fraudvault service client.
  * 
  * @author <a href="mailto:claudia.rodriguez@payulatam.com">Claudia Jimena Rodriguez</a>
  */
+@Data
 public abstract class FraudvaultClient {
 
 	/** The configuration for the Fraudvault client */
@@ -70,25 +73,5 @@ public abstract class FraudvaultClient {
 	 * @throws FraudvaultException if an error occurs in the update operation.
 	 */
 	public abstract FraudvaultUpdateStateResponse updateTransactionState(String transactionId, Long stateId) throws FraudvaultException;
-
-	/**
-	 * Returns the client configuration.
-	 * 
-	 * @return the clientConfiguration
-	 */
-	public FraudvaultClientConfiguration getClientConfiguration() {
-
-		return clientConfiguration;
-	}
-
-	/**
-	 * Sets the client configuration.
-	 * 
-	 * @param clientConfiguration the clientConfiguration to set
-	 */
-	public void setClientConfiguration(FraudvaultClientConfiguration clientConfiguration) {
-
-		this.clientConfiguration = clientConfiguration;
-	}
 
 }

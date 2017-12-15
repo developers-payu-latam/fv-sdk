@@ -81,16 +81,23 @@ public class RetrofitFraudvaultClient extends FraudvaultClient {
 	 * @see com.payulatam.fraudvault.api.client.FraudvaultClient#prevalidate(com.payulatam.fraudvault.model.request.Transaction)
 	 */
 	@Override
-	public FraudvaultPrevalidationResponse prevalidate(Transaction transaction) throws FraudvaultException {		
+	public FraudvaultPrevalidationResponse prevalidate(Transaction transaction) throws FraudvaultException {
+
+		if (transaction == null) {
+			throw new IllegalArgumentException("The transaction object to prevalidate can not be null");
+		}
 		try {
 			PrevalidationRequestSoapEnvelope prevalidationSoapEnvelope = SoapEnvelopeConverter
 					.getPrevalidationSoapEnvelope(transaction, getClientConfiguration().getCredentials());
 			 Call<PrevalidationResponseSoapEnvelope> prevalidationCall = fraudvaultService.prevalidate(prevalidationSoapEnvelope);
 			Response<PrevalidationResponseSoapEnvelope> response = prevalidationCall.execute();
 			if (response.isSuccessful()) {
-				return FraudvaultPrevalidationResponse.fromXml(response.body().getPrevalidationResponseBodyData().getResponseContent());
-			}
-			else {
+				if(response.body() != null) {
+					return FraudvaultPrevalidationResponse.fromXml(response.body().getPrevalidationResponseBodyData().getResponseContent());
+				} else {
+					throw getUnsuccessfulResponseException("The body of the response is null", response);
+				}
+			} else {
 				throw getUnsuccessfulResponseException("Unsuccessful response of prevalidation", response);
 			}
 		} catch (Exception e) {
@@ -104,15 +111,22 @@ public class RetrofitFraudvaultClient extends FraudvaultClient {
 	 */
 	@Override
 	public FraudvaultPrevalidationResponse evaluate(Transaction transaction) throws FraudvaultException {
+
+		if (transaction == null) {
+			throw new IllegalArgumentException("The transaction object to evaluate can not be null");
+		}
 		try {
 			EvaluationRequestSoapEnvelope evaluationSoapEnvelope = SoapEnvelopeConverter
 					.getEvaluationSoapEnvelope(transaction,getClientConfiguration().getCredentials());
 			Call<EvaluationResponseSoapEnvelope> evaluationCall = fraudvaultService.evaluate(evaluationSoapEnvelope);
 			Response<EvaluationResponseSoapEnvelope> response = evaluationCall.execute();
 			if (response.isSuccessful()) {
-				return FraudvaultPrevalidationResponse.fromXml(response.body().getPrevalidationResponseBodyData().getResponseContent());
-			}
-			else {
+				if(response.body() != null) {
+					return FraudvaultPrevalidationResponse.fromXml(response.body().getPrevalidationResponseBodyData().getResponseContent());
+				} else {
+					throw getUnsuccessfulResponseException("The body of the response is null", response);
+				}
+			} else {
 				throw getUnsuccessfulResponseException("Unsuccessful response of evaluation", response);
 			}
 		} catch (Exception e) {
@@ -127,6 +141,10 @@ public class RetrofitFraudvaultClient extends FraudvaultClient {
 
 	@Override
 	public FraudvaultPosvalidationResponse posvalidate(String transactionId) throws FraudvaultException {
+
+		if (transactionId == null) {
+			throw new IllegalArgumentException("The transaction ID to posvalidate can not be null");
+		}
 		try {
 			PosvalidationRequestSoapEnvelope postvalidationSoapEnvelope = SoapEnvelopeConverter
 					.getPostvalidationSoapEnvelope(transactionId, getClientConfiguration().getCredentials());
@@ -148,6 +166,10 @@ public class RetrofitFraudvaultClient extends FraudvaultClient {
 	 */
 	@Override
 	public FraudvaultQueryStateResponse queryTransactionState(String transactionId) throws FraudvaultException {
+
+		if (transactionId == null) {
+			throw new IllegalArgumentException("The transaction ID to query can not be null");
+		}
 		try {
 			QueryStateRequestSoapEnvelope queryStateSoapEnvelope = SoapEnvelopeConverter
 					.getQueryStateSoapEnvelope(transactionId, getClientConfiguration().getCredentials());
@@ -169,6 +191,10 @@ public class RetrofitFraudvaultClient extends FraudvaultClient {
 	 */
 	@Override
 	public FraudvaultUpdateStateResponse updateTransactionState(String transactionId, Long stateId) throws FraudvaultException{
+
+		if (transactionId == null || stateId == null) {
+			throw new IllegalArgumentException("The transaction ID and the state ID can not be null");
+		}
 		try {
 			UpdateStateRequestSoapEnvelope updateStateRequestSoapEnvelope = SoapEnvelopeConverter
 					.getUpdateStateSoapEnvelope(transactionId, stateId, getClientConfiguration().getCredentials());

@@ -14,16 +14,16 @@ import com.payulatam.fraudvault.client.retrofit.model.soap.request.UpdateStateRe
 import com.payulatam.fraudvault.model.request.Credentials;
 import com.payulatam.fraudvault.model.request.Transaction;
 
+import lombok.NoArgsConstructor;
+
 /**
  * Utility class for convert the transaction data to be sent to Fraudvault in objects of the soap message envelope model.
  * 
  * @author <a href="mailto:claudia.rodriguez@payulatam.com" >Claudia Jimena Rodriguez</a>
  */
+
+@NoArgsConstructor
 public class SoapEnvelopeConverter {
-
-	private SoapEnvelopeConverter() {
-
-	}
 
 	/**
 	 * Converts the transaction data into a {@code PrevalidationRequestSoapEnvelope} object.

@@ -22,8 +22,8 @@
       <transacciones-similares>114</transacciones-similares>
       <filtros>
         <filtro>
-          <nombre-regla>monitor_telefono [MONITOREAR]</nombre-regla>
-          <nombre>Teléfono Oficina</nombre>
+          <nombre-regla>regla_test [MONITOREAR]</nombre-regla>
+          <nombre>Documento del comprador</nombre>
           <valor>12345678</valor>
           <valor-configuracion>12345678</valor-configuracion>
           <operador>IGUAL</operador>

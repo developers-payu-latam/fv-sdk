@@ -272,8 +272,8 @@ public class ResponseConversionTest {
 		Assert.assertNotNull(triggeredRules);
 		Assert.assertEquals(triggeredRules.size(), 2);
 		TriggeredRule rule1 = triggeredRules.get(0);
-		Assert.assertEquals(rule1.getRuleName(), "monitor_telefono [MONITOREAR]");
-		Assert.assertEquals(rule1.getFilteredAttributeName(), "Teléfono Oficina");
+		Assert.assertEquals(rule1.getRuleName(), "regla_test [MONITOREAR]");
+		Assert.assertEquals(rule1.getFilteredAttributeName(), "Documento del comprador");
 		Assert.assertEquals(rule1.getRuleConfiguredValue(), "12345678");
 		Assert.assertEquals(rule1.getFilteredValue(), "12345678");
 		Assert.assertEquals(rule1.getOperator(), "IGUAL");
