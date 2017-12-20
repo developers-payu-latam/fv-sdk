@@ -16,13 +16,15 @@ import com.payulatam.fraudvault.client.retrofit.RetrofitFraudvaultClient;
  */
 public class FraudvaultClientFactory {
 	
+	private FraudvaultClientFactory(){}
+	
 	/**
 	 * Gets an instance of the retrofit Fraudvault client.
 	 * 
 	 * @param configuration the configuration data for the client.
 	 * @return the Fraudvault client.
 	 */
-	public static FraudvaultClient createFraudvaultClient(FraudvaultClientConfiguration configuration){
+	public static FraudvaultClient createDefaultFraudvaultClient(FraudvaultClientConfiguration configuration){
 		if(configuration == null){
 			 throw new IllegalArgumentException("Fraudvault client configuration must not be null");
 		}		

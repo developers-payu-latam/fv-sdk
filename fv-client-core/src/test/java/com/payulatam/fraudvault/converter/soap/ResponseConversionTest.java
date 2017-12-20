@@ -12,10 +12,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import com.payulatam.fraudvault.api.client.exception.XmlConversionException;
 import com.payulatam.fraudvault.model.response.ControlListsInformation;
 import com.payulatam.fraudvault.model.response.FraudvaultEvaluation;
 import com.payulatam.fraudvault.model.response.FraudvaultEvaluationDetail;
@@ -35,183 +35,170 @@ import com.payulatam.fraudvault.model.response.TriggeredRule;
  */
 public class ResponseConversionTest {
 	
-	
-	/** Class logger. */
-	private final Logger logger = Logger.getLogger(getClass());
-	
 	/**
 	 * Test the conversion from the xml response to the object representing the Fraudvault prevalidation response
+	 * @throws IOException 
+	 * @throws XmlConversionException 
+	 * @throws IOException if an error happens reading the file.
+	 * @throws XmlConversionException if the object cannot be deserialized from the XML.
 	 */
 	@Test
-	public void convertPrevalidationResponseContent() {
+	public void convertPrevalidationResponseContent() throws IOException, XmlConversionException{
 
-		try {
-			String xmlResponse = cargarXml("responsePrevalidation.xml");
-			FraudvaultPrevalidationResponse response = FraudvaultPrevalidationResponse.fromXml(xmlResponse);
-			Assert.assertEquals(response.getAnswerCode(), new Integer(1));
-			Assert.assertNull(response.getErrorCode());
-			Assert.assertNull(response.getErrorMessage());
-			Assert.assertNotNull(response.getEvaluation());
-			Assert.assertEquals(response.getEvaluation().getDecision(), new Integer(1));
+		String xmlResponse = cargarXml("responsePrevalidation.xml");
+		FraudvaultPrevalidationResponse response = FraudvaultPrevalidationResponse.fromXml(xmlResponse);
+		Assert.assertEquals(response.getAnswerCode(), new Integer(1));
+		Assert.assertNull(response.getErrorCode());
+		Assert.assertNull(response.getErrorMessage());
+		Assert.assertNotNull(response.getEvaluation());
+		Assert.assertEquals(response.getEvaluation().getDecision(), new Integer(1));
 
-			FraudvaultEvaluationDetail evaluationDetail = response.getEvaluation().getDetail();
-			Assert.assertNotNull(evaluationDetail);
-			Assert.assertEquals(evaluationDetail.getTransactionId(), "9194802");
-			Assert.assertNotNull(evaluationDetail.getActions());
-			Assert.assertNotNull(evaluationDetail.getAlerts());
-			Assert.assertEquals(evaluationDetail.getActions().size(), 1);
-			Assert.assertEquals(evaluationDetail.getAlerts().size(), 6);
-			Assert.assertNotNull(evaluationDetail.getSimilarTransactionsNumber());
-			Assert.assertEquals(evaluationDetail.getSimilarTransactionsNumber(), new Integer(114));
+		FraudvaultEvaluationDetail evaluationDetail = response.getEvaluation().getDetail();
+		Assert.assertNotNull(evaluationDetail);
+		Assert.assertEquals(evaluationDetail.getTransactionId(), "9194802");
+		Assert.assertNotNull(evaluationDetail.getActions());
+		Assert.assertNotNull(evaluationDetail.getAlerts());
+		Assert.assertEquals(evaluationDetail.getActions().size(), 1);
+		Assert.assertEquals(evaluationDetail.getAlerts().size(), 6);
+		Assert.assertNotNull(evaluationDetail.getSimilarTransactionsNumber());
+		Assert.assertEquals(evaluationDetail.getSimilarTransactionsNumber(), new Integer(114));
 
-			validateControlListsInformation(evaluationDetail);
-			validateTriggeredRules(evaluationDetail);
-			validateHeuristicAnalysis(evaluationDetail);
-			validateIssuerBank(evaluationDetail);
-			validateIpAddressLocation(evaluationDetail);
+		validateControlListsInformation(evaluationDetail);
+		validateTriggeredRules(evaluationDetail);
+		validateHeuristicAnalysis(evaluationDetail);
+		validateIssuerBank(evaluationDetail);
+		validateIpAddressLocation(evaluationDetail);
 
-			Assert.assertFalse(evaluationDetail.isIpProxy());
-			Assert.assertEquals(evaluationDetail.getIspName(), "DoD Network Information Center");
+		Assert.assertFalse(evaluationDetail.isIpProxy());
+		Assert.assertEquals(evaluationDetail.getIspName(), "DoD Network Information Center");
 
-			Integer evaluationTime = evaluationDetail.getEvaluationTime();
-			Assert.assertNotNull(evaluationTime);
-			Assert.assertEquals(evaluationTime, new Integer(2141));
+		Integer evaluationTime = evaluationDetail.getEvaluationTime();
+		Assert.assertNotNull(evaluationTime);
+		Assert.assertEquals(evaluationTime, new Integer(2141));
 
-			Assert.assertNull(evaluationDetail.getErrorCode());
-			Assert.assertNull(evaluationDetail.getErrorMessage());
-
-		} catch (Exception e) {
-			logger.error("Unexpected error testing the convertion of response content", e);
-		}
+		Assert.assertNull(evaluationDetail.getErrorCode());
+		Assert.assertNull(evaluationDetail.getErrorMessage());
 	}
 	
 	/**
 	 * Test the conversion from the xml response to the object representing the Fraudvault transaction state query response.
+	 * @throws IOException if an error happens reading the file.
+	 * @throws XmlConversionException if the object cannot be deserialized from the XML.
 	 */
 	@Test
-	public void convertQueryStateResponseContent() {
+	public void convertQueryStateResponseContent() throws IOException, XmlConversionException{
 
-		try {
-			String xmlResponse = cargarXml("responseQueryState.xml");
-			FraudvaultQueryStateResponse response = FraudvaultQueryStateResponse.fromXml(xmlResponse);
-			Assert.assertNotNull(response.getDate());
-			Assert.assertEquals(response.getAnswerCode(), new Integer(1));
-			Assert.assertNull(response.getErrorCode());
-			Assert.assertNull(response.getErrorMessage());
-			FraudvaultStateOperationResponseContent responseContent = response.getQueryStateResponseContent();
-			Assert.assertEquals(responseContent.getTransactionId(), "456602622");
-			Assert.assertEquals(responseContent.getState(), new Integer(11));
-			Assert.assertEquals(responseContent.getAnswerCode(), new Integer(1));
-			Assert.assertNull(responseContent.getErrorMessage());
-		} catch (Exception e) {
-			logger.error("Unexpected error testing the convertion of response content", e);
-		}
+		String xmlResponse = cargarXml("responseQueryState.xml");
+		FraudvaultQueryStateResponse response = FraudvaultQueryStateResponse.fromXml(xmlResponse);
+		Assert.assertNotNull(response.getDate());
+		Assert.assertEquals(response.getAnswerCode(), new Integer(1));
+		Assert.assertNull(response.getErrorCode());
+		Assert.assertNull(response.getErrorMessage());
+		FraudvaultStateOperationResponseContent responseContent = response
+				.getQueryStateResponseContent();
+		Assert.assertEquals(responseContent.getTransactionId(), "456602622");
+		Assert.assertEquals(responseContent.getState(), new Integer(11));
+		Assert.assertEquals(responseContent.getAnswerCode(), new Integer(1));
+		Assert.assertNull(responseContent.getErrorMessage());
 	}
 	
 	/**
 	 * Test the conversion from the xml response to the object representing the Fraudvault transaction update query response.
+	 * @throws IOException if an error happens reading the file.
+	 * @throws XmlConversionException if the object cannot be deserialized from the XML. 
 	 */
 	@Test
-	public void convertUpdateStateResponseContent() {
+	public void convertUpdateStateResponseContent() throws IOException, XmlConversionException{
 
-		try {
-			String xmlResponse = cargarXml("responseUpdateState.xml");
-			FraudvaultUpdateStateResponse response = FraudvaultUpdateStateResponse.fromXml(xmlResponse);
-			Assert.assertNotNull(response.getDate());
-			Assert.assertEquals(response.getAnswerCode(), new Integer(1));
-			Assert.assertNull(response.getErrorCode());
-			Assert.assertNull(response.getErrorMessage());
-			FraudvaultStateOperationResponseContent responseContent = response.getUpdateStateResponseContent();
-			Assert.assertEquals(responseContent.getTransactionId(), "456602622");			
-			Assert.assertEquals(responseContent.getAnswerCode(), new Integer(1));
-			Assert.assertNull(responseContent.getErrorMessage());
-		} catch (Exception e) {
-			logger.error("Unexpected error testing the convertion of response content", e);
-		}
+		String xmlResponse = cargarXml("responseUpdateState.xml");
+		FraudvaultUpdateStateResponse response = FraudvaultUpdateStateResponse.fromXml(xmlResponse);
+		Assert.assertNotNull(response.getDate());
+		Assert.assertEquals(response.getAnswerCode(), new Integer(1));
+		Assert.assertNull(response.getErrorCode());
+		Assert.assertNull(response.getErrorMessage());
+		FraudvaultStateOperationResponseContent responseContent = response
+				.getUpdateStateResponseContent();
+		Assert.assertEquals(responseContent.getTransactionId(), "456602622");
+		Assert.assertEquals(responseContent.getAnswerCode(), new Integer(1));
+		Assert.assertNull(responseContent.getErrorMessage());
 	}
 	
 	/**
 	 * Test the conversion from the xml response to the object representing the Fraudvault posvalidation response.
+	 * @throws IOException 
+	 * @throws XmlConversionException 
 	 */
 	@Test
-	public void convertPosvalidationResponseContent(){
-		try {
-			String xmlResponse = cargarXml("responsePosvalidation.xml");
-			FraudvaultPosvalidationResponse response = FraudvaultPosvalidationResponse.fromXml(xmlResponse);
-			Assert.assertNotNull(response.getDate());
-			Assert.assertEquals(response.getAnswerCode(), new Integer(1));
-			Assert.assertNull(response.getErrorCode());
-			Assert.assertNull(response.getErrorMessage());
-			
-			FraudvaultEvaluation evaluation = response.getEvaluation();
-			Assert.assertNotNull(evaluation);
-			Assert.assertEquals(evaluation.getDecision(), new Integer(6));
-			
-			FraudvaultEvaluationDetail evaluationDetail = evaluation.getDetail();
-			Assert.assertEquals(evaluationDetail.getTransactionId(), "9194802");
-			Assert.assertNull(evaluationDetail.getErrorCode());
-			Assert.assertNull(evaluationDetail.getErrorMessage());
+	public void convertPosvalidationResponseContent() throws IOException, XmlConversionException{
 
-			Integer evaluationTime = evaluationDetail.getEvaluationTime();
-			Assert.assertNotNull(evaluationTime);
-			Assert.assertEquals(evaluationTime, new Integer(2854));
-			Assert.assertNotNull(evaluationDetail.getSimilarTransactionsNumber());
-			Assert.assertEquals(evaluationDetail.getSimilarTransactionsNumber(), new Integer(114));
-			Assert.assertNull(evaluationDetail.getActions());
-			Assert.assertNull(evaluationDetail.getRules());
-			
-		} catch (Exception e) {
-			logger.error("Unexpected error testing the convertion of response content", e);
-		}
+		String xmlResponse = cargarXml("responsePosvalidation.xml");
+		FraudvaultPosvalidationResponse response = FraudvaultPosvalidationResponse
+				.fromXml(xmlResponse);
+		Assert.assertNotNull(response.getDate());
+		Assert.assertEquals(response.getAnswerCode(), new Integer(1));
+		Assert.assertNull(response.getErrorCode());
+		Assert.assertNull(response.getErrorMessage());
+
+		FraudvaultEvaluation evaluation = response.getEvaluation();
+		Assert.assertNotNull(evaluation);
+		Assert.assertEquals(evaluation.getDecision(), new Integer(6));
+
+		FraudvaultEvaluationDetail evaluationDetail = evaluation.getDetail();
+		Assert.assertEquals(evaluationDetail.getTransactionId(), "9194802");
+		Assert.assertNull(evaluationDetail.getErrorCode());
+		Assert.assertNull(evaluationDetail.getErrorMessage());
+
+		Integer evaluationTime = evaluationDetail.getEvaluationTime();
+		Assert.assertNotNull(evaluationTime);
+		Assert.assertEquals(evaluationTime, new Integer(2854));
+		Assert.assertNotNull(evaluationDetail.getSimilarTransactionsNumber());
+		Assert.assertEquals(evaluationDetail.getSimilarTransactionsNumber(), new Integer(114));
+		Assert.assertNull(evaluationDetail.getActions());
+		Assert.assertNull(evaluationDetail.getRules());
 	}
 	
 	/**
 	 * Test the conversion from the xml response with returned error to the object representing the Fraudvault prevalidation response.
+	 * @throws IOException if an error happens reading the file.
+	 * @throws XmlConversionException if the object cannot be deserialized from the XML.
 	 */
 	@Test
-	public void convertPrevalidationResponseInputMissingTag(){
-		String xmlResponse;
-		try {
-			xmlResponse = cargarXml("responsePreInputMissingTag.xml");
-			FraudvaultPosvalidationResponse response = FraudvaultPosvalidationResponse.fromXml(xmlResponse);
-			Assert.assertNotNull(response.getDate());
-			Assert.assertEquals(response.getAnswerCode(), new Integer(2));
-			Assert.assertNotNull(response.getErrorCode());
-			Assert.assertEquals(response.getErrorCode(), new Integer(1005));
-			Assert.assertNotNull(response.getErrorMessage());
-			Assert.assertNull(response.getEvaluation());
-		} catch (Exception e) {
-			logger.error("Unexpected error testing convertPrevalidationResponseInputMissingTag", e);
-		}		
+	public void convertPrevalidationResponseInputMissingTag() throws IOException, XmlConversionException{
+
+		String xmlResponse = cargarXml("responsePreInputMissingTag.xml");
+		FraudvaultPosvalidationResponse response = FraudvaultPosvalidationResponse.fromXml(xmlResponse);
+		Assert.assertNotNull(response.getDate());
+		Assert.assertEquals(response.getAnswerCode(), new Integer(2));
+		Assert.assertNotNull(response.getErrorCode());
+		Assert.assertEquals(response.getErrorCode(), new Integer(1005));
+		Assert.assertNotNull(response.getErrorMessage());
+		Assert.assertNull(response.getEvaluation());
 	}
 	
 	/**
 	 * Test the conversion from the xml response with returned error to the object representing the Fraudvault transaction state query response.
+	 * @throws IOException if an error happens reading the file.
+	 * @throws XmlConversionException if the object cannot be deserialized from the XML. 
 	 */
 	@Test
-	public void convertQueryStateResponseTrxIdInvalid(){
-		String xmlResponse;
-		try {
-			xmlResponse = cargarXml("responseQueryStateTrxIdInvalid.xml");
-			FraudvaultQueryStateResponse response = FraudvaultQueryStateResponse.fromXml(xmlResponse);
-			Assert.assertNotNull(response.getDate());
-			Assert.assertEquals(response.getAnswerCode(), new Integer(2));
-			Assert.assertNotNull(response.getErrorCode());
-			Assert.assertEquals(response.getErrorCode(), new Integer(1007));
-			Assert.assertNotNull(response.getErrorMessage());			
+	public void convertQueryStateResponseTrxIdInvalid() throws IOException, XmlConversionException{
 
-			FraudvaultStateOperationResponseContent responseContent = response.getQueryStateResponseContent();
-			Assert.assertNotNull(responseContent);			
-			Assert.assertNotNull(responseContent.getAnswerCode());
-			Assert.assertEquals(responseContent.getAnswerCode(), new Integer(2));			
-			Assert.assertNotNull(responseContent.getErrorMessage());
-			Assert.assertNotNull(responseContent.getTransactionId());
-			Assert.assertEquals(responseContent.getTransactionId(), "456602622111");
-			Assert.assertNull(responseContent.getState());
-			
-		} catch (Exception e) {
-			logger.error("Unexpected error testing convertPrevalidationResponseInputMissingTag", e);
-		}		
+		String xmlResponse = cargarXml("responseQueryStateTrxIdInvalid.xml");
+		FraudvaultQueryStateResponse response = FraudvaultQueryStateResponse.fromXml(xmlResponse);
+		Assert.assertNotNull(response.getDate());
+		Assert.assertEquals(response.getAnswerCode(), new Integer(2));
+		Assert.assertNotNull(response.getErrorCode());
+		Assert.assertEquals(response.getErrorCode(), new Integer(1007));
+		Assert.assertNotNull(response.getErrorMessage());
+
+		FraudvaultStateOperationResponseContent responseContent = response.getQueryStateResponseContent();
+		Assert.assertNotNull(responseContent);
+		Assert.assertNotNull(responseContent.getAnswerCode());
+		Assert.assertEquals(responseContent.getAnswerCode(), new Integer(2));
+		Assert.assertNotNull(responseContent.getErrorMessage());
+		Assert.assertNotNull(responseContent.getTransactionId());
+		Assert.assertEquals(responseContent.getTransactionId(), "456602622111");
+		Assert.assertNull(responseContent.getState());
 	}
 
 	/**

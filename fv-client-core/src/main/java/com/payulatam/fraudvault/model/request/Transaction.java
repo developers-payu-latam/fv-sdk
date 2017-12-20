@@ -12,6 +12,7 @@ import org.simpleframework.xml.convert.AnnotationStrategy;
 import org.simpleframework.xml.convert.Convert;
 import org.simpleframework.xml.core.Persister;
 
+import com.payulatam.fraudvault.api.client.exception.XmlConversionException;
 import com.payulatam.fraudvault.util.DateConverter;
 
 import lombok.Builder;
@@ -111,14 +112,19 @@ public class Transaction {
 	 * Serializes the this {@code Transaction} object to XML data.
 	 * 
 	 * @return the XML data from the {@code Transaction}.
-	 * @throws Exception if the object cannot be serialized.
+	 * @throws XmlConversionException if the object cannot be serialized.
 	 */
-	public String toXml() throws Exception {
+	public String toXml() throws XmlConversionException {
 
-		Serializer serializer = new Persister(new AnnotationStrategy());
-		Writer writer = new StringWriter();
-		serializer.write(this, writer);
-		return writer.toString();
+		try {
+			Serializer serializer = new Persister(new AnnotationStrategy());
+			Writer writer = new StringWriter();
+			serializer.write(this, writer);
+			return writer.toString();
+		} catch (Exception e) {
+			throw new XmlConversionException("Exception serilizing the Transaction object to XML", e);
+		}
+
 	}
 
 }

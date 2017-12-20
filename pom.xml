@@ -55,4 +55,8 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
+	<properties>
+	   <retrofit.version>2.3.0</retrofit.version>
+	   <converter.simplexml.version>2.3.0</converter.simplexml.version>
+	</properties>
 </project>

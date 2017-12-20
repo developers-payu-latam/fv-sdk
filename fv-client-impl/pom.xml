@@ -24,12 +24,12 @@
 		<dependency>
 			<groupId>com.squareup.retrofit2</groupId>
 			<artifactId>retrofit</artifactId>
-			<version>2.3.0</version>
+			<version>${retrofit.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.squareup.retrofit2</groupId>
 			<artifactId>converter-simplexml</artifactId>
-			<version>2.3.0</version>
+			<version>${converter.simplexml.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.testng</groupId>

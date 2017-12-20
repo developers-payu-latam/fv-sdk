@@ -53,7 +53,7 @@ public class RetrofitClientTest {
 				.builder(TEST_CLIENT_ID, TEST_USER_LOGIN, TEST_USER_PASSWORD).build();
 		FraudvaultClientConfiguration configuration = FraudvaultClientConfiguration
 				.builder(credentials, TEST_WS_BASE_URL).build();
-		return FraudvaultClientFactory.createFraudvaultClient(configuration);
+		return FraudvaultClientFactory.createDefaultFraudvaultClient(configuration);
 	}
 	
 	@BeforeSuite
@@ -62,33 +62,25 @@ public class RetrofitClientTest {
 	}
 	
 	/**
-	 * Test the transaction prevalidation with teh prevalidate method.
+	 * Test the transaction prevalidation with the prevalidate method.
+	 * @throws FraudvaultException if an error occurs in the prevalidation process.
 	 */
 	@Test
-	public void testPrevalidate() {
+	public void testPrevalidate() throws FraudvaultException{
 		logger.debug("---- Prevalidation test in STG");
-		try {
-			FraudvaultPrevalidationResponse response = getClientFraudavaultStgEndpoint().prevalidate(getTransaction(trxId));
-			assertPrevalidationResponse(response);
-
-		} catch (FraudvaultException e) {
-			logger.debug("Unexpected error testing prevalidation in STG");
-		}
+		FraudvaultPrevalidationResponse response = getClientFraudavaultStgEndpoint().prevalidate(getTransaction(trxId));
+		assertPrevalidationResponse(response);
 	}
 
 	/**
 	 * Test the transaction prevalidation with the evaluate method.
+	 * @throws FraudvaultException if an error occurs in the prevalidation process.
 	 */
 	@Test
-	public void testEvaluate() {
+	public void testEvaluate() throws FraudvaultException {
 		logger.debug("---- Evaluate test in STG");
-		try {
-			FraudvaultPrevalidationResponse response = getClientFraudavaultStgEndpoint().evaluate(getTransaction(trxId));
-			assertPrevalidationResponse(response);
-
-		} catch (FraudvaultException e) {
-			logger.debug("Unexpected error testing prevalidation in STG");
-		}
+		FraudvaultPrevalidationResponse response = getClientFraudavaultStgEndpoint().evaluate(getTransaction(trxId));
+		assertPrevalidationResponse(response);
 	}
 
 	/**
@@ -118,86 +110,73 @@ public class RetrofitClientTest {
 
 	/**
 	 * Test the transaction posvalidation.
+	 * @throws FraudvaultException if an error occurs in the posvalidation process. 
 	 */
 	@Test(dependsOnMethods = {"testPrevalidate"})
-	public void testPostvalidate() {
+	public void testPostvalidate() throws FraudvaultException {
 		logger.debug("---- Posvalidation test in STG");
-		try {
-			FraudvaultPosvalidationResponse response = getClientFraudavaultStgEndpoint().posvalidate(trxId);
-			Assert.assertNotNull(response);
-			Assert.assertEquals(response.getAnswerCode(), new Integer(1));
-			Assert.assertNotNull(response.getDate());
-			Assert.assertNull(response.getErrorCode());
-			Assert.assertNull(response.getErrorMessage());
+		FraudvaultPosvalidationResponse response = getClientFraudavaultStgEndpoint().posvalidate(trxId);
+		Assert.assertNotNull(response);
+		Assert.assertEquals(response.getAnswerCode(), new Integer(1));
+		Assert.assertNotNull(response.getDate());
+		Assert.assertNull(response.getErrorCode());
+		Assert.assertNull(response.getErrorMessage());
 
-			FraudvaultEvaluation evaluation = response.getEvaluation();
-			Assert.assertNotNull(evaluation);
-			Assert.assertNotNull(evaluation.getDecision());
-						
-			FraudvaultEvaluationDetail evaluationDetail = evaluation.getDetail();
-			Assert.assertNotNull(evaluationDetail);
-			
-			Assert.assertNotNull(evaluationDetail.getTransactionId());
-			Assert.assertNotNull(evaluationDetail.getEvaluationTime());
-			Assert.assertNull(evaluationDetail.getErrorCode());
-			Assert.assertNull(evaluationDetail.getErrorMessage());
-			printEvaluationDetail(evaluationDetail);
+		FraudvaultEvaluation evaluation = response.getEvaluation();
+		Assert.assertNotNull(evaluation);
+		Assert.assertNotNull(evaluation.getDecision());
 
-		} catch (FraudvaultException e) {
-			logger.debug("Unexpected error testing prevalidation in STG");
-		}
+		FraudvaultEvaluationDetail evaluationDetail = evaluation.getDetail();
+		Assert.assertNotNull(evaluationDetail);
+
+		Assert.assertNotNull(evaluationDetail.getTransactionId());
+		Assert.assertNotNull(evaluationDetail.getEvaluationTime());
+		Assert.assertNull(evaluationDetail.getErrorCode());
+		Assert.assertNull(evaluationDetail.getErrorMessage());
+		printEvaluationDetail(evaluationDetail);
 	}
 
 	/**
 	 * Test the query of the transaction state.
+	 * @throws FraudvaultException if an error occurs in the query operation.
 	 */
 	@Test(dependsOnMethods = {"testPrevalidate"})
-	public void testQueryState() {
+	public void testQueryState() throws FraudvaultException {
 		logger.debug("---- Query transaction state test in STG");
-		try {
-			FraudvaultQueryStateResponse response = getClientFraudavaultStgEndpoint().queryTransactionState(trxId);
-			
-			Assert.assertNotNull(response);
-			Assert.assertEquals(response.getAnswerCode(), new Integer(1));
-			Assert.assertNotNull(response.getDate());
-			Assert.assertNull(response.getErrorCode());
-			Assert.assertNull(response.getErrorMessage());
-			FraudvaultStateOperationResponseContent responseContent = response.getQueryStateResponseContent();			
-			Assert.assertNotNull(responseContent.getTransactionId());
-			Assert.assertNotNull(responseContent.getState());
-			Assert.assertNotNull(responseContent.getAnswerCode());
-			Assert.assertEquals(responseContent.getAnswerCode(), new Integer(1));
-			Assert.assertNull(responseContent.getErrorMessage());
-
-		}  catch (FraudvaultException e) {
-			logger.debug("Unexpected error testing the query of transaction state in STG");
-		}
+		FraudvaultQueryStateResponse response = getClientFraudavaultStgEndpoint().queryTransactionState(trxId);
+		Assert.assertNotNull(response);
+		Assert.assertEquals(response.getAnswerCode(), new Integer(1));
+		Assert.assertNotNull(response.getDate());
+		Assert.assertNull(response.getErrorCode());
+		Assert.assertNull(response.getErrorMessage());
+		FraudvaultStateOperationResponseContent responseContent = response
+				.getQueryStateResponseContent();
+		Assert.assertNotNull(responseContent.getTransactionId());
+		Assert.assertNotNull(responseContent.getState());
+		Assert.assertNotNull(responseContent.getAnswerCode());
+		Assert.assertEquals(responseContent.getAnswerCode(), new Integer(1));
+		Assert.assertNull(responseContent.getErrorMessage());
 	}
 
 	/**
 	 * Test the update of the transaction state.
+	 * @throws FraudvaultException if an error occurs in the update operation.
 	 */
 	@Test(dependsOnMethods = {"testPrevalidate"})
-	public void testUpdateState() {
+	public void testUpdateState() throws FraudvaultException {
 		logger.debug("---- Update transaction state test in STG");
-		try {
-
-			FraudvaultUpdateStateResponse response = getClientFraudavaultStgEndpoint().updateTransactionState(trxId, 11L);
-			Assert.assertNotNull(response);
-			Assert.assertEquals(response.getAnswerCode(), new Integer(1));
-			Assert.assertNotNull(response.getDate());
-			Assert.assertNull(response.getErrorCode());
-			Assert.assertNull(response.getErrorMessage());
-			FraudvaultStateOperationResponseContent responseContent = response.getUpdateStateResponseContent();		
-			Assert.assertNotNull(responseContent.getTransactionId());
-			Assert.assertEquals(responseContent.getTransactionId(), trxId);
-			Assert.assertNotNull(responseContent.getAnswerCode());
-			Assert.assertEquals(responseContent.getAnswerCode(), new Integer(1));
-			Assert.assertNull(responseContent.getErrorMessage());
-
-		}  catch (FraudvaultException e) {
-			logger.debug("Unexpected error testing the query of transaction state in STG");
-		}
+		FraudvaultUpdateStateResponse response = getClientFraudavaultStgEndpoint().updateTransactionState(trxId, 11L);
+		Assert.assertNotNull(response);
+		Assert.assertEquals(response.getAnswerCode(), new Integer(1));
+		Assert.assertNotNull(response.getDate());
+		Assert.assertNull(response.getErrorCode());
+		Assert.assertNull(response.getErrorMessage());
+		FraudvaultStateOperationResponseContent responseContent = response.getUpdateStateResponseContent();
+		Assert.assertNotNull(responseContent.getTransactionId());
+		Assert.assertEquals(responseContent.getTransactionId(), trxId);
+		Assert.assertNotNull(responseContent.getAnswerCode());
+		Assert.assertEquals(responseContent.getAnswerCode(), new Integer(1));
+		Assert.assertNull(responseContent.getErrorMessage());
 	}
 
 	/**

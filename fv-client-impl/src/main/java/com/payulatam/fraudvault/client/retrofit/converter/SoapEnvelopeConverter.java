@@ -5,6 +5,7 @@
  */
 package com.payulatam.fraudvault.client.retrofit.converter;
 
+import com.payulatam.fraudvault.api.client.exception.XmlConversionException;
 import com.payulatam.fraudvault.client.retrofit.model.soap.request.EvaluationRequestSoapEnvelope;
 import com.payulatam.fraudvault.client.retrofit.model.soap.request.PosvalidationRequestSoapEnvelope;
 import com.payulatam.fraudvault.client.retrofit.model.soap.request.PrevalidationBodyData;
@@ -14,16 +15,14 @@ import com.payulatam.fraudvault.client.retrofit.model.soap.request.UpdateStateRe
 import com.payulatam.fraudvault.model.request.Credentials;
 import com.payulatam.fraudvault.model.request.Transaction;
 
-import lombok.NoArgsConstructor;
-
 /**
  * Utility class for convert the transaction data to be sent to Fraudvault in objects of the soap message envelope model.
  * 
  * @author <a href="mailto:claudia.rodriguez@payulatam.com" >Claudia Jimena Rodriguez</a>
  */
-
-@NoArgsConstructor
 public class SoapEnvelopeConverter {
+	
+	private SoapEnvelopeConverter(){}
 
 	/**
 	 * Converts the transaction data into a {@code PrevalidationRequestSoapEnvelope} object.
@@ -31,10 +30,10 @@ public class SoapEnvelopeConverter {
 	 * @param transaction transaction data.
 	 * @param credentials authentication data.
 	 * @return the {@code PrevalidationRequestSoapEnvelope} object.
-	 * @throws Exception If an error happens getting the XML data of the transaction.
+	 * @throws XmlConversionException If an error happens getting the XML data of the transaction.
 	 */
 	public static PrevalidationRequestSoapEnvelope getPrevalidationSoapEnvelope(Transaction transaction,
-			Credentials credentials) throws Exception {
+			Credentials credentials) throws XmlConversionException{
 
 		PrevalidationBodyData prevalidationBodyData = new PrevalidationBodyData();
 		prevalidationBodyData.setTransaction(transaction.toXml());
@@ -53,10 +52,10 @@ public class SoapEnvelopeConverter {
 	 * @param transaction transaction data.
 	 * @param credentials authentication data.
 	 * @return the {@code EvaluationRequestSoapEnvelope} object.
-	 * @throws Exception If an error happens getting the XML data of the transaction.
+	 * @throws XmlConversionException If an error happens getting the XML data of the transaction.
 	 */
 	public static EvaluationRequestSoapEnvelope getEvaluationSoapEnvelope(Transaction transaction,
-			Credentials credentials) throws Exception {
+			Credentials credentials) throws XmlConversionException{
 
 		PrevalidationBodyData prevalidationBodyData = new PrevalidationBodyData();
 		prevalidationBodyData.setTransaction(transaction.toXml());
@@ -72,10 +71,9 @@ public class SoapEnvelopeConverter {
 	/**
 	 * Converts the transaction data into a {@code PosvalidationRequestSoapEnvelope} object.
 	 * 
-	 * @param transaction transaction data.
+	 * @param transactionId identifier of the transaction.
 	 * @param credentials authentication data.
 	 * @return the {@code PosvalidationRequestSoapEnvelope} object.
-	 * @throws Exception If an error happens getting the XML data of the transaction.
 	 */
 	public static PosvalidationRequestSoapEnvelope getPostvalidationSoapEnvelope(String transactionId, Credentials credentials) {
 

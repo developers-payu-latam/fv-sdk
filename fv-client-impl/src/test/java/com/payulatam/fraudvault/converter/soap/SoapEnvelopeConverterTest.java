@@ -16,11 +16,11 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.testng.Assert;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
 
+import com.payulatam.fraudvault.api.client.exception.XmlConversionException;
 import com.payulatam.fraudvault.client.retrofit.converter.SoapEnvelopeConverter;
 import com.payulatam.fraudvault.client.retrofit.model.soap.request.PosvalidationRequestSoapEnvelope;
 import com.payulatam.fraudvault.client.retrofit.model.soap.request.PosvalidationRequestSoapEnvelope.PosvalidationBodyData;
@@ -52,9 +52,6 @@ import com.payulatam.fraudvault.model.request.Transaction;
  */
 public class SoapEnvelopeConverterTest {
 
-	/** Class logger. */
-	private final Logger logger = Logger.getLogger(getClass());
-
 	private Credentials credentials;
 
 	private String idTransaction;
@@ -69,26 +66,23 @@ public class SoapEnvelopeConverterTest {
 	/**
 	 * Test the conversion from the transaction data to the object representing the soap message envelope of the prevalidation request.
 	 * Validate the generated xml data of the transaction with the expected xml contained in the file: resources/transaction.xml
+	 * @throws IOException if an error happens reading the file.
+	 * @throws XmlConversionException If an error happens getting the XML data of the transaction.
 	 */
 	@Test
-	public void testPrevalidationSoapConverter() {
+	public void testPrevalidationSoapConverter() throws XmlConversionException, IOException {
 
 		Transaction trxToPrevalidate = getTransaction(idTransaction);
-		try {
-			PrevalidationRequestSoapEnvelope prevalidationSoapEnvelope = SoapEnvelopeConverter
+		PrevalidationRequestSoapEnvelope prevalidationSoapEnvelope = SoapEnvelopeConverter
 					.getPrevalidationSoapEnvelope(trxToPrevalidate, credentials);
-			PrevalidationBodyData soapEnvelopeBody = prevalidationSoapEnvelope.getRequestSoapEnvelopeBody();
-			Assert.assertEquals(credentials.getClientId(), soapEnvelopeBody.getClientId());
-			Assert.assertEquals(credentials.getLogin(), soapEnvelopeBody.getLogin());
-			Assert.assertEquals(credentials.getPassword(), soapEnvelopeBody.getPassword());
-
-			String transactionXml = soapEnvelopeBody.getTransaction();
-			String expectedXml = cargarXml("transaction.xml");
-			Assert.assertEquals(transactionXml.replace("\n", "").replace("\r", "").replace(" ", ""),
+		PrevalidationBodyData soapEnvelopeBody = prevalidationSoapEnvelope.getRequestSoapEnvelopeBody();
+		Assert.assertEquals(credentials.getClientId(), soapEnvelopeBody.getClientId());
+		Assert.assertEquals(credentials.getLogin(), soapEnvelopeBody.getLogin());
+		Assert.assertEquals(credentials.getPassword(), soapEnvelopeBody.getPassword());
+		String transactionXml = soapEnvelopeBody.getTransaction();
+		String expectedXml = cargarXml("transaction.xml");
+		Assert.assertEquals(transactionXml.replace("\n", "").replace("\r", "").replace(" ", ""),
 					expectedXml.replace("\n", "").replace("\r", "").replace(" ", ""));
-		} catch (Exception e) {
-			logger.error("Unexpected error testing PrevalidationSoapConverter", e);
-		}
 	}
 
 	/**

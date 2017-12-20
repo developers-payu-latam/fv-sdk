@@ -11,6 +11,8 @@ import org.simpleframework.xml.convert.AnnotationStrategy;
 import org.simpleframework.xml.core.Persister;
 import org.simpleframework.xml.strategy.Strategy;
 
+import com.payulatam.fraudvault.api.client.exception.XmlConversionException;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -31,13 +33,18 @@ public class FraudvaultPosvalidationResponse extends FraudvaultBaseResponse {
 	 * 
 	 * @param xml the XML to be deserialized.
 	 * @return the object deserialized from the XML .
-	 * @throws Exception if the object cannot be deserialized.
+	 * @throws XmlConversionException if the object cannot be deserialized.
 	 */
-	public static FraudvaultPosvalidationResponse fromXml(String xml) throws Exception {
-		
-		Strategy strategy = new AnnotationStrategy();
-		Serializer serializer = new Persister(strategy);
-		return serializer.read(FraudvaultPosvalidationResponse.class, xml);
+	public static FraudvaultPosvalidationResponse fromXml(String xml) throws XmlConversionException{
+
+		try {
+			Strategy strategy = new AnnotationStrategy();
+			Serializer serializer = new Persister(strategy);
+			return serializer.read(FraudvaultPosvalidationResponse.class, xml);
+		} catch (Exception e) {
+			throw new XmlConversionException(
+					"Exception deserializing the XML string to FraudvaultPosvalidationResponse object", e);
+		}
 	}	
 
 }

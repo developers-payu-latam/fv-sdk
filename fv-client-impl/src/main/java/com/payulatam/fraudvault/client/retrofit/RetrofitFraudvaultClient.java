@@ -14,6 +14,7 @@ import org.simpleframework.xml.core.Persister;
 import com.payulatam.fraudvault.api.client.FraudvaultClient;
 import com.payulatam.fraudvault.api.client.FraudvaultClientConfiguration;
 import com.payulatam.fraudvault.api.client.exception.FraudvaultException;
+import com.payulatam.fraudvault.api.client.exception.XmlConversionException;
 import com.payulatam.fraudvault.client.retrofit.converter.SoapEnvelopeConverter;
 import com.payulatam.fraudvault.client.retrofit.model.soap.request.*;
 import com.payulatam.fraudvault.client.retrofit.model.soap.response.*;
@@ -100,6 +101,9 @@ public class RetrofitFraudvaultClient extends FraudvaultClient {
 			} else {
 				throw getUnsuccessfulResponseException("Unsuccessful response of prevalidation", response);
 			}
+		} catch (XmlConversionException e) {
+			throw getException("Error converting the data to SOAP envelope objects in prevalidation"
+					+ transaction.getTransactionId(), e);
 		} catch (Exception e) {
 			throw getException("Unexpected error calling the prevalidation Fraudvault service for transaction: "
 							+ transaction.getTransactionId(), e);
@@ -129,6 +133,9 @@ public class RetrofitFraudvaultClient extends FraudvaultClient {
 			} else {
 				throw getUnsuccessfulResponseException("Unsuccessful response of evaluation", response);
 			}
+		} catch (XmlConversionException e) {
+			throw getException("Error converting the data to SOAP envelope objects in evaluation"
+					+ transaction.getTransactionId(), e);
 		} catch (Exception e) {
 			throw getException("Unexpected error calling the evaluation Fraudvault service for transaction: "
 					+ transaction.getTransactionId(), e);

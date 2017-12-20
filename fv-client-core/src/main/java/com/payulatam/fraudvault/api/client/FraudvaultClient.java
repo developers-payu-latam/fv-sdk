@@ -50,7 +50,7 @@ public abstract class FraudvaultClient {
 	/**
 	 * Performs the fraud posvalidation of a transaction.
 	 * 
-	 * @param transaction the transaction to be posvalidated by Fraudvault.
+	 * @param transactionId the identifier of the transaction to be posvalidated by Fraudvault.
 	 * @return the response with the result of the Fraudvault posvalidation.
 	 * @throws FraudvaultException if an error occurs in the posvalidation process.
 	 */
