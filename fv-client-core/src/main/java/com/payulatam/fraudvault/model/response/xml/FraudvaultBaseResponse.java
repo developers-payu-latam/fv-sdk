@@ -3,7 +3,7 @@
  * http://www.payu.com.co
  * Date: 19 de oct. de 2017
  */
-package com.payulatam.fraudvault.model.response;
+package com.payulatam.fraudvault.model.response.xml;
 
 import java.util.Date;
 
@@ -22,22 +22,21 @@ import lombok.Data;
 @Data
 public class FraudvaultBaseResponse {
 
-	/**Date of the response generation. */
+	/** Date of the response generation. */
 	@Element(name = "fecha", required = false)
 	@Convert(DateConverter.class)
-	private Date date;
+	private Date responseDate;
 
-	/** A value of 1: it represents a successful response code; in case there were no errors, 
-	 * otherwise 2: it represents an error response code; in case there were errors. */
+	/** The error code. */
 	@Element(name = "codigo-respuesta", required = false)
-	private Integer answerCode;
+	private Integer generalAnswerCode;
 
 	/** A value from 1001 to 1999 representing the happened error. */
 	@Element(name = "codigo-error", required = false)
-	private Integer errorCode;
+	private Integer generalErrorCode;
 
 	/** Text describing the happened error. */
 	@Element(name = "mensaje-error", required = false)
-	private String errorMessage;
+	private String generalErrorMessage;
 
 }

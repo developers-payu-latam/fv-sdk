@@ -36,7 +36,7 @@ public class PosvalidationRequestSoapEnvelope {
 	 */
 	@Root
 	@Data
-	@EqualsAndHashCode(callSuper = false)
+	@EqualsAndHashCode(callSuper = true)
 	public static class PosvalidationBodyData extends RequestBodyBaseData {
 
 		@Element(name = "arg3")

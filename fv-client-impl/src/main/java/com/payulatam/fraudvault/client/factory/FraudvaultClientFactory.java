@@ -12,7 +12,7 @@ import com.payulatam.fraudvault.client.retrofit.RetrofitFraudvaultClient;
 /**
  * Factory to create Fraudvault client instances.
  * 
- * @author <a href="mailto:claudia.rodriguez@payulatam.com">Claudia Jimena Rodriguez</a>e 
+ * @author <a href="mailto:claudia.rodriguez@payulatam.com">Claudia Jimena Rodriguez</a> 
  */
 public class FraudvaultClientFactory {
 	

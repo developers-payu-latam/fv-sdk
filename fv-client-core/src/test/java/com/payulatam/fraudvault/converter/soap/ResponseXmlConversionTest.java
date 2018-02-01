@@ -16,24 +16,12 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import com.payulatam.fraudvault.api.client.exception.XmlConversionException;
-import com.payulatam.fraudvault.model.response.ControlListsInformation;
-import com.payulatam.fraudvault.model.response.FraudvaultEvaluation;
-import com.payulatam.fraudvault.model.response.FraudvaultEvaluationDetail;
-import com.payulatam.fraudvault.model.response.FraudvaultPosvalidationResponse;
-import com.payulatam.fraudvault.model.response.FraudvaultPrevalidationResponse;
-import com.payulatam.fraudvault.model.response.FraudvaultQueryStateResponse;
-import com.payulatam.fraudvault.model.response.FraudvaultStateOperationResponseContent;
-import com.payulatam.fraudvault.model.response.FraudvaultUpdateStateResponse;
-import com.payulatam.fraudvault.model.response.HeuristicAnalysis;
-import com.payulatam.fraudvault.model.response.IpAddressLocation;
-import com.payulatam.fraudvault.model.response.IssuerBank;
-import com.payulatam.fraudvault.model.response.ListMatch;
-import com.payulatam.fraudvault.model.response.TriggeredRule;
+import com.payulatam.fraudvault.model.response.xml.*;
 
 /**
- * Test for the conversions from XML data to Fraudvault reponse objects.
+ * Test for the conversions from XML data to objects with the XML response structure.
  */
-public class ResponseConversionTest {
+public class ResponseXmlConversionTest {
 	
 	/**
 	 * Test the conversion from the xml response to the object representing the Fraudvault prevalidation response
@@ -47,9 +35,9 @@ public class ResponseConversionTest {
 
 		String xmlResponse = cargarXml("responsePrevalidation.xml");
 		FraudvaultPrevalidationResponse response = FraudvaultPrevalidationResponse.fromXml(xmlResponse);
-		Assert.assertEquals(response.getAnswerCode(), new Integer(1));
-		Assert.assertNull(response.getErrorCode());
-		Assert.assertNull(response.getErrorMessage());
+		Assert.assertEquals(response.getGeneralAnswerCode(), new Integer(1));
+		Assert.assertNull(response.getGeneralErrorCode());
+		Assert.assertNull(response.getGeneralErrorMessage());
 		Assert.assertNotNull(response.getEvaluation());
 		Assert.assertEquals(response.getEvaluation().getDecision(), new Integer(1));
 
@@ -90,10 +78,10 @@ public class ResponseConversionTest {
 
 		String xmlResponse = cargarXml("responseQueryState.xml");
 		FraudvaultQueryStateResponse response = FraudvaultQueryStateResponse.fromXml(xmlResponse);
-		Assert.assertNotNull(response.getDate());
-		Assert.assertEquals(response.getAnswerCode(), new Integer(1));
-		Assert.assertNull(response.getErrorCode());
-		Assert.assertNull(response.getErrorMessage());
+		Assert.assertNotNull(response.getResponseDate());
+		Assert.assertEquals(response.getGeneralAnswerCode(), new Integer(1));
+		Assert.assertNull(response.getGeneralErrorCode());
+		Assert.assertNull(response.getGeneralErrorMessage());
 		FraudvaultStateOperationResponseContent responseContent = response
 				.getQueryStateResponseContent();
 		Assert.assertEquals(responseContent.getTransactionId(), "456602622");
@@ -112,10 +100,10 @@ public class ResponseConversionTest {
 
 		String xmlResponse = cargarXml("responseUpdateState.xml");
 		FraudvaultUpdateStateResponse response = FraudvaultUpdateStateResponse.fromXml(xmlResponse);
-		Assert.assertNotNull(response.getDate());
-		Assert.assertEquals(response.getAnswerCode(), new Integer(1));
-		Assert.assertNull(response.getErrorCode());
-		Assert.assertNull(response.getErrorMessage());
+		Assert.assertNotNull(response.getResponseDate());
+		Assert.assertEquals(response.getGeneralAnswerCode(), new Integer(1));
+		Assert.assertNull(response.getGeneralErrorCode());
+		Assert.assertNull(response.getGeneralErrorMessage());
 		FraudvaultStateOperationResponseContent responseContent = response
 				.getUpdateStateResponseContent();
 		Assert.assertEquals(responseContent.getTransactionId(), "456602622");
@@ -134,10 +122,10 @@ public class ResponseConversionTest {
 		String xmlResponse = cargarXml("responsePosvalidation.xml");
 		FraudvaultPosvalidationResponse response = FraudvaultPosvalidationResponse
 				.fromXml(xmlResponse);
-		Assert.assertNotNull(response.getDate());
-		Assert.assertEquals(response.getAnswerCode(), new Integer(1));
-		Assert.assertNull(response.getErrorCode());
-		Assert.assertNull(response.getErrorMessage());
+		Assert.assertNotNull(response.getResponseDate());
+		Assert.assertEquals(response.getGeneralAnswerCode(), new Integer(1));
+		Assert.assertNull(response.getGeneralErrorCode());
+		Assert.assertNull(response.getGeneralErrorMessage());
 
 		FraudvaultEvaluation evaluation = response.getEvaluation();
 		Assert.assertNotNull(evaluation);
@@ -167,11 +155,11 @@ public class ResponseConversionTest {
 
 		String xmlResponse = cargarXml("responsePreInputMissingTag.xml");
 		FraudvaultPosvalidationResponse response = FraudvaultPosvalidationResponse.fromXml(xmlResponse);
-		Assert.assertNotNull(response.getDate());
-		Assert.assertEquals(response.getAnswerCode(), new Integer(2));
-		Assert.assertNotNull(response.getErrorCode());
-		Assert.assertEquals(response.getErrorCode(), new Integer(1005));
-		Assert.assertNotNull(response.getErrorMessage());
+		Assert.assertNotNull(response.getResponseDate());
+		Assert.assertEquals(response.getGeneralAnswerCode(), new Integer(2));
+		Assert.assertNotNull(response.getGeneralErrorCode());
+		Assert.assertEquals(response.getGeneralErrorCode(), new Integer(1005));
+		Assert.assertNotNull(response.getGeneralErrorMessage());
 		Assert.assertNull(response.getEvaluation());
 	}
 	
@@ -185,11 +173,11 @@ public class ResponseConversionTest {
 
 		String xmlResponse = cargarXml("responseQueryStateTrxIdInvalid.xml");
 		FraudvaultQueryStateResponse response = FraudvaultQueryStateResponse.fromXml(xmlResponse);
-		Assert.assertNotNull(response.getDate());
-		Assert.assertEquals(response.getAnswerCode(), new Integer(2));
-		Assert.assertNotNull(response.getErrorCode());
-		Assert.assertEquals(response.getErrorCode(), new Integer(1007));
-		Assert.assertNotNull(response.getErrorMessage());
+		Assert.assertNotNull(response.getResponseDate());
+		Assert.assertEquals(response.getGeneralAnswerCode(), new Integer(2));
+		Assert.assertNotNull(response.getGeneralErrorCode());
+		Assert.assertEquals(response.getGeneralErrorCode(), new Integer(1007));
+		Assert.assertNotNull(response.getGeneralErrorMessage());
 
 		FraudvaultStateOperationResponseContent responseContent = response.getQueryStateResponseContent();
 		Assert.assertNotNull(responseContent);

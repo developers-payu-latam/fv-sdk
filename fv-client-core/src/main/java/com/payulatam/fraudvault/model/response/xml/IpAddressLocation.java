@@ -3,7 +3,7 @@
  * http://www.payu.com.co
  * Date: 16 de nov. de 2017
  */
-package com.payulatam.fraudvault.model.response;
+package com.payulatam.fraudvault.model.response.xml;
 
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;

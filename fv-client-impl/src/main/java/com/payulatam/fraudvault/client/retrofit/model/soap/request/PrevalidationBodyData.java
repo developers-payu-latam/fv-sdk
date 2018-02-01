@@ -18,7 +18,7 @@ import lombok.EqualsAndHashCode;
  */
 @Root
 @Data
-@EqualsAndHashCode(callSuper = false)
+@EqualsAndHashCode(callSuper = true)
 public class PrevalidationBodyData extends RequestBodyBaseData {
 
 	@Element(name = "arg3", data = true)

@@ -15,14 +15,19 @@ import com.payulatam.fraudvault.api.client.FraudvaultClient;
 import com.payulatam.fraudvault.api.client.FraudvaultClientConfiguration;
 import com.payulatam.fraudvault.api.client.exception.FraudvaultException;
 import com.payulatam.fraudvault.api.client.exception.XmlConversionException;
+import com.payulatam.fraudvault.client.retrofit.converter.ResponseConverter;
 import com.payulatam.fraudvault.client.retrofit.converter.SoapEnvelopeConverter;
 import com.payulatam.fraudvault.client.retrofit.model.soap.request.*;
 import com.payulatam.fraudvault.client.retrofit.model.soap.response.*;
 import com.payulatam.fraudvault.model.request.Transaction;
-import com.payulatam.fraudvault.model.response.FraudvaultPosvalidationResponse;
-import com.payulatam.fraudvault.model.response.FraudvaultPrevalidationResponse;
-import com.payulatam.fraudvault.model.response.FraudvaultQueryStateResponse;
-import com.payulatam.fraudvault.model.response.FraudvaultUpdateStateResponse;
+import com.payulatam.fraudvault.model.response.FraudvaultPosvalidation;
+import com.payulatam.fraudvault.model.response.FraudvaultPrevalidation;
+import com.payulatam.fraudvault.model.response.FraudvaultStateQuery;
+import com.payulatam.fraudvault.model.response.FraudvaultStateUpdate;
+import com.payulatam.fraudvault.model.response.xml.FraudvaultPosvalidationResponse;
+import com.payulatam.fraudvault.model.response.xml.FraudvaultPrevalidationResponse;
+import com.payulatam.fraudvault.model.response.xml.FraudvaultQueryStateResponse;
+import com.payulatam.fraudvault.model.response.xml.FraudvaultUpdateStateResponse;
 
 import okhttp3.OkHttpClient;
 import retrofit2.Call;
@@ -82,7 +87,7 @@ public class RetrofitFraudvaultClient extends FraudvaultClient {
 	 * @see com.payulatam.fraudvault.api.client.FraudvaultClient#prevalidate(com.payulatam.fraudvault.model.request.Transaction)
 	 */
 	@Override
-	public FraudvaultPrevalidationResponse prevalidate(Transaction transaction) throws FraudvaultException {
+	public FraudvaultPrevalidation prevalidate(Transaction transaction) throws FraudvaultException {
 
 		if (transaction == null) {
 			throw new IllegalArgumentException("The transaction object to prevalidate can not be null");
@@ -94,7 +99,9 @@ public class RetrofitFraudvaultClient extends FraudvaultClient {
 			Response<PrevalidationResponseSoapEnvelope> response = prevalidationCall.execute();
 			if (response.isSuccessful()) {
 				if(response.body() != null) {
-					return FraudvaultPrevalidationResponse.fromXml(response.body().getPrevalidationResponseBodyData().getResponseContent());
+					FraudvaultPrevalidationResponse prevalidationResponse = FraudvaultPrevalidationResponse
+							.fromXml(response.body().getPrevalidationResponseBodyData().getResponseContent());
+					return ResponseConverter.getFraudvaultPrevalidation(prevalidationResponse);
 				} else {
 					throw getUnsuccessfulResponseException("The body of the response is null", response);
 				}
@@ -114,7 +121,7 @@ public class RetrofitFraudvaultClient extends FraudvaultClient {
 	 * @see com.payulatam.fraudvault.api.client.FraudvaultClient#evaluate(com.payulatam.fraudvault.model.request.Transaction)
 	 */
 	@Override
-	public FraudvaultPrevalidationResponse evaluate(Transaction transaction) throws FraudvaultException {
+	public FraudvaultPrevalidation evaluate(Transaction transaction) throws FraudvaultException {
 
 		if (transaction == null) {
 			throw new IllegalArgumentException("The transaction object to evaluate can not be null");
@@ -126,7 +133,9 @@ public class RetrofitFraudvaultClient extends FraudvaultClient {
 			Response<EvaluationResponseSoapEnvelope> response = evaluationCall.execute();
 			if (response.isSuccessful()) {
 				if(response.body() != null) {
-					return FraudvaultPrevalidationResponse.fromXml(response.body().getPrevalidationResponseBodyData().getResponseContent());
+					FraudvaultPrevalidationResponse evaluationResponse = FraudvaultPrevalidationResponse
+							.fromXml(response.body().getPrevalidationResponseBodyData().getResponseContent());
+					return ResponseConverter.getFraudvaultPrevalidation(evaluationResponse);
 				} else {
 					throw getUnsuccessfulResponseException("The body of the response is null", response);
 				}
@@ -147,7 +156,7 @@ public class RetrofitFraudvaultClient extends FraudvaultClient {
 	 */
 
 	@Override
-	public FraudvaultPosvalidationResponse posvalidate(String transactionId) throws FraudvaultException {
+	public FraudvaultPosvalidation posvalidate(String transactionId) throws FraudvaultException {
 
 		if (transactionId == null) {
 			throw new IllegalArgumentException("The transaction ID to posvalidate can not be null");
@@ -158,7 +167,9 @@ public class RetrofitFraudvaultClient extends FraudvaultClient {
 			Call<PosvalidationResponseSoapEnvelope> postvalidationCall = fraudvaultService.posvalidate(postvalidationSoapEnvelope);
 			Response<PosvalidationResponseSoapEnvelope> response = postvalidationCall.execute();
 			if (response.isSuccessful()) {
-				return FraudvaultPosvalidationResponse.fromXml(response.body().getPostvalidationResponseBodyData().getResponseContent());
+				FraudvaultPosvalidationResponse posvalidationResponse = FraudvaultPosvalidationResponse
+						.fromXml(response.body().getPostvalidationResponseBodyData().getResponseContent());
+				return ResponseConverter.getFraudvaultPosvalidation(posvalidationResponse);
 			}
 			else {
 				throw getUnsuccessfulResponseException("Unsuccessful response postvalidating the transaction: " + transactionId, response);
@@ -172,7 +183,7 @@ public class RetrofitFraudvaultClient extends FraudvaultClient {
 	 * @see com.payulatam.fraudvault.api.client.FraudvaultClient#queryTransactionState(java.lang.String)
 	 */
 	@Override
-	public FraudvaultQueryStateResponse queryTransactionState(String transactionId) throws FraudvaultException {
+	public FraudvaultStateQuery queryTransactionState(String transactionId) throws FraudvaultException {
 
 		if (transactionId == null) {
 			throw new IllegalArgumentException("The transaction ID to query can not be null");
@@ -183,7 +194,9 @@ public class RetrofitFraudvaultClient extends FraudvaultClient {
 			Call<QueryStateResponseSoapEnvelope> queryStateCall = fraudvaultService.queryState(queryStateSoapEnvelope);
 			Response<QueryStateResponseSoapEnvelope> response = queryStateCall.execute();
 			if (response.isSuccessful()) {
-				return FraudvaultQueryStateResponse.fromXml(response.body().getQueryStateResponseBodyData().getResponseContent());
+				FraudvaultQueryStateResponse queryStateResponse = FraudvaultQueryStateResponse
+						.fromXml(response.body().getQueryStateResponseBodyData().getResponseContent());
+				return ResponseConverter.getFraudvaultStateQuery(queryStateResponse);
 			}
 			else {
 				throw getUnsuccessfulResponseException("Unsuccessful response querying the state of transaction: " + transactionId, response);
@@ -197,7 +210,7 @@ public class RetrofitFraudvaultClient extends FraudvaultClient {
 	 * @see com.payulatam.fraudvault.api.client.FraudvaultClient#updateTransactionState(java.lang.String, java.lang.Long)
 	 */
 	@Override
-	public FraudvaultUpdateStateResponse updateTransactionState(String transactionId, Long stateId) throws FraudvaultException{
+	public FraudvaultStateUpdate updateTransactionState(String transactionId, Long stateId) throws FraudvaultException{
 
 		if (transactionId == null || stateId == null) {
 			throw new IllegalArgumentException("The transaction ID and the state ID can not be null");
@@ -208,7 +221,9 @@ public class RetrofitFraudvaultClient extends FraudvaultClient {
 			Call<UpdateStateResponseSoapEnvelope> updateStateCall = fraudvaultService.updateState(updateStateRequestSoapEnvelope);
 			Response<UpdateStateResponseSoapEnvelope> response = updateStateCall.execute();
 			if (response.isSuccessful()) {
-				return FraudvaultUpdateStateResponse.fromXml(response.body().getUpdateStateResponseBodyData().getResponseContent());
+				FraudvaultUpdateStateResponse updateStateResponse = FraudvaultUpdateStateResponse.
+						fromXml(response.body().getUpdateStateResponseBodyData().getResponseContent());
+				return ResponseConverter.getFraudvaultStateUpdate(updateStateResponse);
 			}
 			else {
 				throw getUnsuccessfulResponseException("Unsuccessful response updating the state of transaction: "+transactionId, response);

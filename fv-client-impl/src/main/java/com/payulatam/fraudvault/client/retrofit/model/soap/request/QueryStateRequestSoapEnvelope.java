@@ -36,7 +36,7 @@ public class QueryStateRequestSoapEnvelope {
 	 */
 	@Root
 	@Data
-	@EqualsAndHashCode(callSuper = false)
+	@EqualsAndHashCode(callSuper = true)
 	public static class QueryStateBodyData extends RequestBodyBaseData {
 
 		@Element(name = "arg3")

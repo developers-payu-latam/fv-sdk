@@ -16,14 +16,26 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.6.2</version>
 				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
-					<compilerVersion>1.8</compilerVersion>
+					<source>1.7</source>
+					<target>1.7</target>
+					<compilerVersion>1.7</compilerVersion>
 					<encoding>ISO-8859-1</encoding>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.17</version>
+				<configuration>
+					<skip>false</skip>
+					<useFile>false</useFile>
+					<excludes>
+						<exclude>**/*IT.java</exclude>
+					</excludes>
 				</configuration>
 			</plugin>
 		</plugins>
 	</build>
+	
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
@@ -55,8 +67,39 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
+
+	<profiles>
+		<profile>
+			<id>integration-tests</id>
+			<build>
+				<plugins>
+					<plugin>
+						<artifactId>maven-failsafe-plugin</artifactId>
+						<version>2.17</version>
+						<configuration>
+							<skipTests>false</skipTests>
+							<includes>
+								<include>**/*IT.java</include>
+							</includes>
+						</configuration>
+						<executions>
+							<execution>
+								<goals>
+									<goal>integration-test</goal>
+									<goal>verify</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+
 	<properties>
-	   <retrofit.version>2.3.0</retrofit.version>
-	   <converter.simplexml.version>2.3.0</converter.simplexml.version>
+	    <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
+	    <project.reporting.outputEncoding>ISO-8859-1</project.reporting.outputEncoding>
+		<retrofit.version>2.3.0</retrofit.version>
+		<converter.simplexml.version>2.3.0</converter.simplexml.version>
 	</properties>
 </project>

@@ -1,4 +1,4 @@
-package com.payulatam.fraudvault.model.response;
+package com.payulatam.fraudvault.model.response.xml;
 
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;

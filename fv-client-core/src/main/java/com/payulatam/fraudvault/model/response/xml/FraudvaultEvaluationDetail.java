@@ -1,4 +1,4 @@
-package com.payulatam.fraudvault.model.response;
+package com.payulatam.fraudvault.model.response.xml;
 
 import java.util.List;
 
@@ -58,7 +58,7 @@ public class FraudvaultEvaluationDetail {
 	private Integer evaluationTime;
 
 	@Element(name = "codigo-error", required = false)
-	private String errorCode;
+	private Integer errorCode;
 
 	@Element(name = "mensaje-error", required = false)
 	private String errorMessage;

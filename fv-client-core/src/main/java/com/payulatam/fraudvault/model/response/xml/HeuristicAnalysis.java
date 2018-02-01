@@ -1,4 +1,4 @@
-package com.payulatam.fraudvault.model.response;
+package com.payulatam.fraudvault.model.response.xml;
 
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;
@@ -6,7 +6,7 @@ import org.simpleframework.xml.Root;
 import lombok.Data;
 
 /**
- * Encapsulates the scores assigned by the neural network.
+ * Encapsulates the scores assigned by the neuronal network.
  * 
  * @author <a href="mailto:claudia.rodriguez@payulatam.com">Claudia Jimena Rodriguez</a>
  */
