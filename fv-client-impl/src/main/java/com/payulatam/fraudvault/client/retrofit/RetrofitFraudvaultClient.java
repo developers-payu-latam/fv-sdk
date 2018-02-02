@@ -98,10 +98,16 @@ public class RetrofitFraudvaultClient extends FraudvaultClient {
 			 Call<PrevalidationResponseSoapEnvelope> prevalidationCall = fraudvaultService.prevalidate(prevalidationSoapEnvelope);
 			Response<PrevalidationResponseSoapEnvelope> response = prevalidationCall.execute();
 			if (response.isSuccessful()) {
-				if(response.body() != null) {
-					FraudvaultPrevalidationResponse prevalidationResponse = FraudvaultPrevalidationResponse
-							.fromXml(response.body().getPrevalidationResponseBodyData().getResponseContent());
-					return ResponseConverter.getFraudvaultPrevalidation(prevalidationResponse);
+				PrevalidationResponseSoapEnvelope reponseBody = response.body();
+				if(reponseBody != null) {
+					if (reponseBody.getPrevalidationResponseBodyData() != null) {
+						FraudvaultPrevalidationResponse prevalidationResponse = FraudvaultPrevalidationResponse
+								.fromXml(reponseBody.getPrevalidationResponseBodyData().getResponseContent());
+						return ResponseConverter.getFraudvaultPrevalidation(prevalidationResponse);
+					} else {
+						throw getUnsuccessfulResponseException("Unexpected error: the prevalidation response body data "
+								+ "is not present in the response body.", response);
+					}
 				} else {
 					throw getUnsuccessfulResponseException("The body of the response is null", response);
 				}
@@ -132,12 +138,17 @@ public class RetrofitFraudvaultClient extends FraudvaultClient {
 			Call<EvaluationResponseSoapEnvelope> evaluationCall = fraudvaultService.evaluate(evaluationSoapEnvelope);
 			Response<EvaluationResponseSoapEnvelope> response = evaluationCall.execute();
 			if (response.isSuccessful()) {
-				if(response.body() != null) {
-					FraudvaultPrevalidationResponse evaluationResponse = FraudvaultPrevalidationResponse
-							.fromXml(response.body().getPrevalidationResponseBodyData().getResponseContent());
-					return ResponseConverter.getFraudvaultPrevalidation(evaluationResponse);
+				EvaluationResponseSoapEnvelope reponseBody = response.body();
+				if(reponseBody != null) {
+					if (reponseBody.getPrevalidationResponseBodyData() != null) {
+						FraudvaultPrevalidationResponse evaluationResponse = FraudvaultPrevalidationResponse
+								.fromXml(reponseBody.getPrevalidationResponseBodyData().getResponseContent());
+						return ResponseConverter.getFraudvaultPrevalidation(evaluationResponse);
+					} else {
+						throw new Exception("Unexpected error: the evaluation response body data is not present in the response body.");
+					}
 				} else {
-					throw getUnsuccessfulResponseException("The body of the response is null", response);
+					throw getUnsuccessfulResponseException("The body of the evaluation response is null", response);
 				}
 			} else {
 				throw getUnsuccessfulResponseException("Unsuccessful response of evaluation", response);
@@ -167,11 +178,20 @@ public class RetrofitFraudvaultClient extends FraudvaultClient {
 			Call<PosvalidationResponseSoapEnvelope> postvalidationCall = fraudvaultService.posvalidate(postvalidationSoapEnvelope);
 			Response<PosvalidationResponseSoapEnvelope> response = postvalidationCall.execute();
 			if (response.isSuccessful()) {
-				FraudvaultPosvalidationResponse posvalidationResponse = FraudvaultPosvalidationResponse
-						.fromXml(response.body().getPostvalidationResponseBodyData().getResponseContent());
-				return ResponseConverter.getFraudvaultPosvalidation(posvalidationResponse);
-			}
-			else {
+				PosvalidationResponseSoapEnvelope responseBody = response.body();
+				if (responseBody != null) {
+					if (responseBody.getPostvalidationResponseBodyData() != null) {
+						FraudvaultPosvalidationResponse posvalidationResponse = FraudvaultPosvalidationResponse
+								.fromXml(responseBody.getPostvalidationResponseBodyData().getResponseContent());
+						return ResponseConverter.getFraudvaultPosvalidation(posvalidationResponse);
+					} else {
+						throw getUnsuccessfulResponseException( "Unexpected error: the posvalidation "
+								+ "response body data is not present in the response body.", response);
+					}
+				} else {
+					throw getUnsuccessfulResponseException("The body of the posvalidate response is null", response);
+				}
+			} else {
 				throw getUnsuccessfulResponseException("Unsuccessful response postvalidating the transaction: " + transactionId, response);
 			}
 		} catch (Exception e) {
@@ -194,11 +214,20 @@ public class RetrofitFraudvaultClient extends FraudvaultClient {
 			Call<QueryStateResponseSoapEnvelope> queryStateCall = fraudvaultService.queryState(queryStateSoapEnvelope);
 			Response<QueryStateResponseSoapEnvelope> response = queryStateCall.execute();
 			if (response.isSuccessful()) {
-				FraudvaultQueryStateResponse queryStateResponse = FraudvaultQueryStateResponse
-						.fromXml(response.body().getQueryStateResponseBodyData().getResponseContent());
-				return ResponseConverter.getFraudvaultStateQuery(queryStateResponse);
-			}
-			else {
+				QueryStateResponseSoapEnvelope responseBody = response.body();
+				if(responseBody != null){
+					if(responseBody.getQueryStateResponseBodyData() != null){
+						FraudvaultQueryStateResponse queryStateResponse = FraudvaultQueryStateResponse
+								.fromXml(responseBody.getQueryStateResponseBodyData().getResponseContent());
+						return ResponseConverter.getFraudvaultStateQuery(queryStateResponse);
+					} else {
+						throw getUnsuccessfulResponseException( "Unexpected error: the query "
+								+ "response body data is not present in the response body.", response);
+					}
+				} else {
+					throw getUnsuccessfulResponseException("The body of the state query response is null", response);
+				}
+			} else {
 				throw getUnsuccessfulResponseException("Unsuccessful response querying the state of transaction: " + transactionId, response);
 			}
 		} catch (Exception e) {
@@ -221,11 +250,20 @@ public class RetrofitFraudvaultClient extends FraudvaultClient {
 			Call<UpdateStateResponseSoapEnvelope> updateStateCall = fraudvaultService.updateState(updateStateRequestSoapEnvelope);
 			Response<UpdateStateResponseSoapEnvelope> response = updateStateCall.execute();
 			if (response.isSuccessful()) {
-				FraudvaultUpdateStateResponse updateStateResponse = FraudvaultUpdateStateResponse.
-						fromXml(response.body().getUpdateStateResponseBodyData().getResponseContent());
-				return ResponseConverter.getFraudvaultStateUpdate(updateStateResponse);
-			}
-			else {
+				UpdateStateResponseSoapEnvelope responseBody = response.body();
+				if(responseBody != null){
+					if(responseBody.getUpdateStateResponseBodyData() != null) {
+						FraudvaultUpdateStateResponse updateStateResponse = FraudvaultUpdateStateResponse.
+								fromXml(responseBody.getUpdateStateResponseBodyData().getResponseContent());
+						return ResponseConverter.getFraudvaultStateUpdate(updateStateResponse);
+					} else {
+						throw getUnsuccessfulResponseException( "Unexpected error: the update "
+								+ "response body data is not present in the response body.", response);
+					}
+				} else {
+					throw getUnsuccessfulResponseException("The body of the state update response is null", response);
+				}
+			} else {
 				throw getUnsuccessfulResponseException("Unsuccessful response updating the state of transaction: "+transactionId, response);
 			}
 		} catch (Exception e) {
