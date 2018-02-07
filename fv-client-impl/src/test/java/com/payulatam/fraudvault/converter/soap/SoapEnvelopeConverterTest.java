@@ -22,30 +22,11 @@ import org.testng.annotations.Test;
 
 import com.payulatam.fraudvault.api.client.exception.XmlConversionException;
 import com.payulatam.fraudvault.client.retrofit.converter.SoapEnvelopeConverter;
-import com.payulatam.fraudvault.client.retrofit.model.soap.request.PosvalidationRequestSoapEnvelope;
+import com.payulatam.fraudvault.client.retrofit.model.soap.request.*;
 import com.payulatam.fraudvault.client.retrofit.model.soap.request.PosvalidationRequestSoapEnvelope.PosvalidationBodyData;
-import com.payulatam.fraudvault.client.retrofit.model.soap.request.PrevalidationBodyData;
-import com.payulatam.fraudvault.client.retrofit.model.soap.request.PrevalidationRequestSoapEnvelope;
-import com.payulatam.fraudvault.client.retrofit.model.soap.request.QueryStateRequestSoapEnvelope;
 import com.payulatam.fraudvault.client.retrofit.model.soap.request.QueryStateRequestSoapEnvelope.QueryStateBodyData;
-import com.payulatam.fraudvault.client.retrofit.model.soap.request.UpdateStateRequestSoapEnvelope;
 import com.payulatam.fraudvault.client.retrofit.model.soap.request.UpdateStateRequestSoapEnvelope.UpdateStateBodyData;
-import com.payulatam.fraudvault.model.request.AccountHolder;
-import com.payulatam.fraudvault.model.request.Address;
-import com.payulatam.fraudvault.model.request.BookingAgent;
-import com.payulatam.fraudvault.model.request.Buyer;
-import com.payulatam.fraudvault.model.request.Credentials;
-import com.payulatam.fraudvault.model.request.FlightPath;
-import com.payulatam.fraudvault.model.request.Footprint;
-import com.payulatam.fraudvault.model.request.Office;
-import com.payulatam.fraudvault.model.request.Passenger;
-import com.payulatam.fraudvault.model.request.PaymentInformation;
-import com.payulatam.fraudvault.model.request.Pnr;
-import com.payulatam.fraudvault.model.request.Retail;
-import com.payulatam.fraudvault.model.request.RetailItem;
-import com.payulatam.fraudvault.model.request.RetailProduct;
-import com.payulatam.fraudvault.model.request.Seller;
-import com.payulatam.fraudvault.model.request.Transaction;
+import com.payulatam.fraudvault.model.request.*;
 
 /**
  * Test of the soap converter.
@@ -158,9 +139,9 @@ public class SoapEnvelopeConverterTest {
 		Date path2ArrivalDate = getDate(2017, 11, 10, 13, 0, 0);
 
 		List<Passenger> passengers = new ArrayList<>();
-		passengers.add(Passenger.builder().documentType(1).documentNumber("53140140")
+		passengers.add(Passenger.builder().idDocumentType(1).idDocumentNumber("53140140")
 				.firstName("Claudia").lastName("Rodriguez").email("crp@test.com").build());
-		passengers.add(Passenger.builder().documentType(1).documentNumber("53140141")
+		passengers.add(Passenger.builder().idDocumentType(1).idDocumentNumber("53140141")
 				.firstName("Pedro").lastName("Gomez").email("pgomez@test.com").build());
 		List<FlightPath> flightPaths = new ArrayList<>();
 
@@ -169,11 +150,6 @@ public class SoapEnvelopeConverterTest {
 				.build());
 		flightPaths.add(FlightPath.builder().flightNumber("AVI456").arrivalDate(path2ArrivalDate)
 				.departureDate(path2DepartureDate).destination("BOG").origin("MEX").travelClass("A")
-				.build());
-
-		List<RetailItem> items = new ArrayList<>();
-		items.add(RetailItem.builder().quantity(1).unitPrice(new BigDecimal(5000)).product(
-				RetailProduct.builder().code("prd12").name("The book").brand("brand book").build())
 				.build());
 
 		return Transaction.builder()
@@ -194,7 +170,7 @@ public class SoapEnvelopeConverterTest {
 								.bin("546853").currencyIso("COP")
 								.installmentsNumber(2)
 								.holder(AccountHolder.builder().name("Mary Martinez")
-										.mobilePhoneNumber("3143191919").documentNumber("53140140")
+										.mobilePhoneNumber("3143191919").idDocumentNumber("53140140")
 										.build())
 								.build())
 				.deliveryAddress(Address.builder().countryIso("CO").city("Bogota")
@@ -209,7 +185,6 @@ public class SoapEnvelopeConverterTest {
 						.passengers(passengers)
 						.flightPaths(flightPaths)
 						.build())
-				.retail(Retail.builder().items(items).build())
 				.build();
 	}
 	

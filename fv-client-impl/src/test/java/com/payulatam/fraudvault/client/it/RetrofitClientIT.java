@@ -45,24 +45,18 @@ public class RetrofitClientIT {
 	private final Logger logger = Logger.getLogger(getClass());
 	
 	private String trxId;
+	
+	private FraudvaultClient fraudvaultClient;
 
 	/**
-	 * Gets a client for the Fraudvault service in the STG endpoint.
-	 * 
-	 * @return the test service client.
+	 * Initializes some commons fields for the tests.
 	 */
-	private FraudvaultClient getClientFraudvaultStgEndpoint() {
-
-		Credentials credentials = Credentials
-				.builder(TEST_CLIENT_ID, TEST_USER_LOGIN, TEST_USER_PASSWORD).build();
-		FraudvaultClientConfiguration configuration = FraudvaultClientConfiguration
-				.builder(credentials, TEST_WS_BASE_URL).build();
-		return FraudvaultClientFactory.createDefaultFraudvaultClient(configuration);
-	}
-	
 	@BeforeSuite
 	private void init(){
 		trxId = "trx-001" + new Random().nextInt();
+		Credentials credentials = Credentials .builder(TEST_CLIENT_ID, TEST_USER_LOGIN, TEST_USER_PASSWORD).build();
+		fraudvaultClient = FraudvaultClientFactory.createDefaultFraudvaultClient(
+				FraudvaultClientConfiguration.builder(credentials, TEST_WS_BASE_URL).build());
 	}
 	
 	/**
@@ -72,7 +66,7 @@ public class RetrofitClientIT {
 	@Test
 	public void testPrevalidate() throws FraudvaultException{
 		logger.debug("************* PREVALIDATION TEST IN STG *************");
-		FraudvaultPrevalidation response = getClientFraudvaultStgEndpoint().prevalidate(getTransaction(trxId));
+		FraudvaultPrevalidation response = fraudvaultClient.prevalidate(getTransaction(trxId));
 		assertPrevalidationResponse(response);
 	}
 
@@ -83,7 +77,7 @@ public class RetrofitClientIT {
 	@Test
 	public void testEvaluate() throws FraudvaultException {
 		logger.debug("************* EVALUATE TEST IN STG *************");
-		FraudvaultPrevalidation response = getClientFraudvaultStgEndpoint().evaluate(getTransaction(trxId));
+		FraudvaultPrevalidation response = fraudvaultClient.evaluate(getTransaction(trxId));
 		assertPrevalidationResponse(response);
 	}
 
@@ -93,6 +87,7 @@ public class RetrofitClientIT {
 	 */
 	private void assertPrevalidationResponse(FraudvaultPrevalidation response){
 		Assert.assertNotNull(response);
+		printPrevalidationDetail(response);
 		Assert.assertEquals(new Integer(1), response.getGeneralAnswerCode());
 		Assert.assertNotNull(response.getResponseDate());
 		Assert.assertNull(response.getGeneralErrorCode());
@@ -101,8 +96,7 @@ public class RetrofitClientIT {
 		Assert.assertNotNull(response.getTransactionId());
 		Assert.assertNotNull(response.getEvaluationTime());
 		Assert.assertNull(response.getErrorCode());
-		Assert.assertNull(response.getErrorMessage());
-		printPrevalidationDetail(response);
+		Assert.assertNull(response.getErrorMessage());		
 	}
 	
 	/**
@@ -112,7 +106,7 @@ public class RetrofitClientIT {
 	@Test
 	private void assertNonExistentTrxPrevalidationResponse() throws FraudvaultException{
 		logger.debug("************* PREVALIDATION WITH INVALID DATA TEST IN STG *************");
-		FraudvaultPrevalidation response = getClientFraudvaultStgEndpoint().prevalidate(Transaction.builder().transactionId("non-existent-id").build());
+		FraudvaultPrevalidation response = fraudvaultClient.prevalidate(Transaction.builder().transactionId("non-existent-id").build());
 		Assert.assertNotNull(response);
 		Assert.assertEquals(new Integer(2), response.getGeneralAnswerCode());
 		Assert.assertNotNull(response.getResponseDate());
@@ -129,7 +123,7 @@ public class RetrofitClientIT {
 	@Test(dependsOnMethods = {"testPrevalidate"})
 	public void testPostvalidate() throws FraudvaultException {
 		logger.debug("************* POSVALIDATION TEST IN STG *************");
-		FraudvaultPosvalidation response = getClientFraudvaultStgEndpoint().posvalidate(trxId);
+		FraudvaultPosvalidation response = fraudvaultClient.posvalidate(trxId);
 		Assert.assertNotNull(response);
 		Assert.assertEquals(new Integer(1), response.getGeneralAnswerCode());
 		Assert.assertNotNull(response.getResponseDate());
@@ -151,7 +145,7 @@ public class RetrofitClientIT {
 	@Test(dependsOnMethods = {"testPrevalidate"})
 	public void testQueryState() throws FraudvaultException {
 		logger.debug("************* STATE QUERY TEST IN STG *************");
-		FraudvaultStateQuery response = getClientFraudvaultStgEndpoint().queryTransactionState(trxId);
+		FraudvaultStateQuery response = fraudvaultClient.queryTransactionState(trxId);
 		Assert.assertNotNull(response);
 		Assert.assertEquals(new Integer(1), response.getGeneralAnswerCode());
 		Assert.assertNotNull(response.getResponseDate());
@@ -178,7 +172,14 @@ public class RetrofitClientIT {
 	@Test(dependsOnMethods = {"testPrevalidate"})
 	public void testUpdateState() throws FraudvaultException {
 		logger.debug("************* UPDATE STATE TEST IN STG *************");
-		FraudvaultStateUpdate response = getClientFraudvaultStgEndpoint().updateTransactionState(trxId, 11L);
+		FraudvaultStateUpdate response = fraudvaultClient.updateTransactionState(trxId, 11L);
+		logger.debug("-GeneralAnswerCode: " + response.getGeneralAnswerCode() + " -GeneralErrorCode: "
+				+ response.getGeneralErrorCode()
+				+ " -GeneralErrorMessage: " + response.getGeneralErrorMessage() + " -TransactionID: "
+				+ response.getTransactionId()
+				+ " -ResponseDate: " + response.getResponseDate() + " -AnswerCode: "
+				+ response.getAnswerCode()
+				+ " -ErrorMessage: " + response.getErrorMessage());
 		Assert.assertNotNull(response);
 		Assert.assertEquals( new Integer(1), response.getGeneralAnswerCode());
 		Assert.assertNotNull(response.getResponseDate());
@@ -189,13 +190,6 @@ public class RetrofitClientIT {
 		Assert.assertNotNull(response.getAnswerCode());
 		Assert.assertEquals(new Integer(1), response.getAnswerCode());
 		Assert.assertNull(response.getErrorMessage());
-		logger.debug("-GeneralAnswerCode: " + response.getGeneralAnswerCode() + " -GeneralErrorCode: "
-				+ response.getGeneralErrorCode()
-				+ " -GeneralErrorMessage: " + response.getGeneralErrorMessage() + " -TransactionID: "
-				+ response.getTransactionId()
-				+ " -ResponseDate: " + response.getResponseDate() + " -AnswerCode: "
-				+ response.getAnswerCode()
-				+ " -ErrorMessage: " + response.getErrorMessage());
 	}
 	
 	/**
@@ -206,7 +200,7 @@ public class RetrofitClientIT {
 	@Test
 	public void testTrxNonExistentStateUpdate() throws FraudvaultException {
 		logger.debug("************* STATE QUERY WITH INVALID ID TEST IN STG *************");
-		FraudvaultStateUpdate response = getClientFraudvaultStgEndpoint().updateTransactionState("trx-non-existID", 11L);
+		FraudvaultStateUpdate response = fraudvaultClient.updateTransactionState("trx-non-existID", 11L);
 		Assert.assertNotNull(response);
 		Assert.assertEquals(new Integer(2),response.getGeneralAnswerCode());
 		Assert.assertNotNull(response.getResponseDate());
@@ -309,9 +303,9 @@ public class RetrofitClientIT {
 	private Transaction getTransaction(String transactionId) {
 
 		List<Passenger> passengers = new ArrayList<>();
-		passengers.add(Passenger.builder().documentType(1).documentNumber("53140141")
+		passengers.add(Passenger.builder().idDocumentType(1).idDocumentNumber("53140141")
 				.firstName("Claudia").lastName("Rodriguez").email("crp@test.com").build());
-		passengers.add(Passenger.builder().documentType(1).documentNumber("53140142")
+		passengers.add(Passenger.builder().idDocumentType(1).idDocumentNumber("53140142")
 				.firstName("Pedro").lastName("Gomez").email("pgomez@ymail.com").build());
 		List<FlightPath> flightPaths = new ArrayList<>();
 
@@ -320,11 +314,6 @@ public class RetrofitClientIT {
 				.build());
 		flightPaths.add(FlightPath.builder().flightNumber("AVI456").arrivalDate(new Date())
 				.departureDate(new Date()).destination("BOG").origin("MEX").travelClass("A")
-				.build());
-
-		List<RetailItem> items = new ArrayList<>();
-		items.add(RetailItem.builder().quantity(1).unitPrice(new BigDecimal(5000)).product(
-				RetailProduct.builder().code("prd12").name("The book").brand("brand book").build())
 				.build());
 
 		return Transaction.builder()
@@ -345,7 +334,7 @@ public class RetrofitClientIT {
 								.bin("546853").currencyIso("COP")
 								.installmentsNumber(2)
 								.holder(AccountHolder.builder().name("Mary Martinez")
-										.mobilePhoneNumber("3143191919").documentNumber("53140140")
+										.mobilePhoneNumber("3143191919").idDocumentNumber("53140140").gender("F")
 										.build())
 								.build())
 				.deliveryAddress(Address.builder().countryIso("CO").city("Bogota")
@@ -361,7 +350,6 @@ public class RetrofitClientIT {
 						.passengers(passengers)
 						.flightPaths(flightPaths)
 						.build())
-				.retail(Retail.builder().items(items).build())
 				.build();
 	}
 	

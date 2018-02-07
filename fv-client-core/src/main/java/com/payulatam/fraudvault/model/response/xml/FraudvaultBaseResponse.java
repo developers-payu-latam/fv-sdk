@@ -27,11 +27,11 @@ public class FraudvaultBaseResponse {
 	@Convert(DateConverter.class)
 	private Date responseDate;
 
-	/** The error code. */
+	/** The answer code. The values are: 1 for a successful answer or 2 for a failed answer. */
 	@Element(name = "codigo-respuesta", required = false)
 	private Integer generalAnswerCode;
 
-	/** A value from 1001 to 1999 representing the happened error. */
+	/** A value from 1001 to 1999 identifying the error, if an error occurs. */
 	@Element(name = "codigo-error", required = false)
 	private Integer generalErrorCode;
 

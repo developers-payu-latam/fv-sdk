@@ -64,6 +64,6 @@ public class FraudvaultEvaluationDetail {
 	private String errorMessage;
 
 	@Element(name = "validar-con-central-de-riesgo", required = false)
-	private boolean validateCentralRisk;
+	private boolean validateWithCreditBureau;
 
 }

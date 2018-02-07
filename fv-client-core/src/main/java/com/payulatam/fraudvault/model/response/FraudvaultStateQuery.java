@@ -21,8 +21,10 @@ import lombok.EqualsAndHashCode;
 @Builder
 public class FraudvaultStateQuery extends FraudvaultBaseResponse{
 	
+	/** The identifier of the transaction. */
 	private String transactionId;
 
+	/** The identifier of the transaction state. */
 	private Integer state;
 
 	/**
@@ -30,7 +32,8 @@ public class FraudvaultStateQuery extends FraudvaultBaseResponse{
 	 * otherwise 2: it represents an error response code; in case there were errors.
 	 */
 	private Integer answerCode;
-
+	
+	/**  Message associated with the error, if an error occurs */
 	private String errorMessage;
 
 }

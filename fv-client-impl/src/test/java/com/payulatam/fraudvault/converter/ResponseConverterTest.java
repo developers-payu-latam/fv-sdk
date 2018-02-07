@@ -62,7 +62,7 @@ public class ResponseConverterTest {
 		Assert.assertEquals(fvPrevalidation.getIspName(), responseDetail.getIspName());
 		Assert.assertEquals(fvPrevalidation.getSimilarTransactionsNumber(),responseDetail.getSimilarTransactionsNumber());
 		Assert.assertEquals(fvPrevalidation.isIpProxy(), responseDetail.isIpProxy());
-		Assert.assertEquals(fvPrevalidation.isValidateCentralRisk(),responseDetail.isValidateCentralRisk());
+		Assert.assertEquals(fvPrevalidation.isValidateWithCreditBureau(), responseDetail.isValidateWithCreditBureau());
 
 		ListMatch blackLists = fvPrevalidation.getBlackListsMatching();
 		Assert.assertNotNull(blackLists);
@@ -316,7 +316,7 @@ public class ResponseConverterTest {
 		detail.setRules(rules);
 		detail.setSimilarTransactionsNumber(7);
 		detail.setTransactionId("trx-id-test");
-		detail.setValidateCentralRisk(true);
+		detail.setValidateWithCreditBureau(true);
 		evaluation.setDetail(detail);
 		response.setEvaluation(evaluation);
 		response.setGeneralErrorCode(null);

@@ -19,7 +19,7 @@ public class FraudvaultClientFactory {
 	private FraudvaultClientFactory(){}
 	
 	/**
-	 * Gets an instance of the retrofit Fraudvault client.
+	 * Gets an instance of a default Fraudvault client using Retrofit.
 	 * 
 	 * @param configuration the configuration data for the client.
 	 * @return the Fraudvault client.

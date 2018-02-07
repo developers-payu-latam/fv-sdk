@@ -21,6 +21,7 @@ import lombok.EqualsAndHashCode;
 @Builder
 public class FraudvaultStateUpdate extends FraudvaultBaseResponse{
 	
+	/** The identifier of the transaction. */
 	private String transactionId;
 
 	/**
@@ -29,6 +30,7 @@ public class FraudvaultStateUpdate extends FraudvaultBaseResponse{
 	 */
 	private Integer answerCode;
 
+	/**  Message associated with the error, if an error occurs */
 	private String errorMessage;
 
 }

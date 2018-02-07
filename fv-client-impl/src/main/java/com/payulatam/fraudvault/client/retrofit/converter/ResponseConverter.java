@@ -53,7 +53,7 @@ public final class ResponseConverter {
 						.issuerBank(detail.getIssuerBank())
 						.similarTransactionsNumber(detail.getSimilarTransactionsNumber())
 						.transactionId(detail.getTransactionId()).triggeredRules(detail.getRules())
-						.validateCentralRisk(detail.isValidateCentralRisk());
+						.validateWithCreditBureau(detail.isValidateWithCreditBureau());
 
 				ControlListsInformation controlListInformation = detail.getControlListsInformation();
 				if (controlListInformation != null) {

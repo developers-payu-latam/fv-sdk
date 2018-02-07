@@ -91,15 +91,4 @@
       </trayectos>
       <tipo-viaje>RT</tipo-viaje>
    </pnr>
-   <retail>
-      <item>
-         <producto>
-            <codigo>prd12</codigo>
-            <nombre>The book</nombre>
-            <marca>brand book</marca>
-         </producto>
-         <cantidad>1</cantidad>
-         <valor-unitario>5000</valor-unitario>
-      </item>
-   </retail>
 </validar-pago>
