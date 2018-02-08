@@ -21,17 +21,17 @@ import lombok.Data;
 public class Buyer {
 
 	@Element(name = "id", required = false)
-	protected String id;
+	private String id;
 
 	@Element(name = "nombres", required = false)
-	protected String names;
+	private String names;
 
 	@Element(name = "apellidos", required = false)
-	protected String surnames;
+	private String surnames;
 
 	@Element(name = "correo-electronico", required = false)
-	protected String email;
+	private String email;
 
 	@Element(name = "huella", required = false)
-	protected Footprint footPrint;
+	private Footprint footPrint;
 }

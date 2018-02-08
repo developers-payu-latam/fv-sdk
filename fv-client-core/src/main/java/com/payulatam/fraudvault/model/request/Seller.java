@@ -20,15 +20,15 @@ import lombok.Data;
 public class Seller {
 
 	@Element(name = "id", required = false)
-	protected String id;
+	private String id;
 
 	@Element(name = "rubro", required = false)
-	protected Integer businessActivity;
+	private Integer businessActivity;
 
 	@Element(name = "tipo-vendedor", required = false)
-	protected Integer merchantType;
+	private Integer merchantType;
 
 	@Element(name = "codigo-clasificacion-comercio", required = false)
-	protected String clasificationCode;
+	private String clasificationCode;
 
 }
