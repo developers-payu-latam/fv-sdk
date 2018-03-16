@@ -4,10 +4,7 @@ With this sdk you will be able to integrate with the Fraudvault service in a qui
  
 ##¿What data do you need for access our Fraudvault services?
 
-You will need some aunthentication credentials for access our services, You have to contact us for get:
-* Your identifier of client into our system.
-* Your user login to authentication.
-* Your user password to authentication.
+You will need some aunthentication credentials for access our services, You have to contact us for get: Your identifier of client into our system, your user login and password to authentication.
 
 ##¿How you can get an instance of the Fraudvault client?
 
@@ -19,18 +16,19 @@ Credentials credentials = Credentials.builder(yourClientId, yourLogin, yourPassw
 ```
 
 With your Credentials and the base URL of our Fraudvault service, create the configuration of the FraudvaultClient:
+```java
 FraudvaultClientConfiguration fraudvaultClientConfiguration = FraudvaultClientConfiguration.builder(credentials, webServicebaseUrl).build();
-
-The base URL of our Fraudvault services, depends on the environment you're connecting:
-For our sand box environment, use: https://pruebas.maf.pagosonline.net/ws
+```
+The base URL of our Fraudvault services, depends on the environment you're connecting to. For our sandbox environment, use: https://pruebas.maf.pagosonline.net/ws
 
 So, for getting the Fraudvault client just do:
+```java
 FraudvaultClient fraudvaultClient = FraudvaultClientFactory.createDefaultFraudvaultClient(fraudvaultClientConfiguration);
-
+```
 ##¿How you I invoke the Fraudvault services?
 With the instance of the client you will be able to use the different Fraudvault services. For example to call the prevalidation service:
 
-1. Create the object with the data of the transaction(the order) that you want to prevalidate, a simple example could be:
+1 Create the object with the data of the transaction(the order) that you want to prevalidate, a simple example could be:
 ```java
 Transaction transaction = Transaction.builder()
 										.transactionId(theTransactionId)
@@ -55,7 +53,7 @@ Buyer.builder()
 		.email("the buyer email")
 		.build();
 ```		
-2. With the transaction, now you can call the Fraudvault service:
+2 With the transaction, now you can call the Fraudvault service:
 ```java
 FraudvaultPrevalidation prevalidationResponse = fraudvaultClient.prevalidate(transaction);
 ```
