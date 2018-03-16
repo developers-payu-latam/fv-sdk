@@ -1,6 +1,6 @@
 # Fraudvault SDK #
 
-With this sdk you will be able to integrate with the Fraudvault service in a quick and easy way.
+With this SDK you will be able to integrate the Fraudvault services in a quick and easy way.
  
 ##¿What data do you need for access our Fraudvault services?
 
@@ -25,10 +25,10 @@ So, for getting the Fraudvault client just do:
 ```java
 FraudvaultClient fraudvaultClient = FraudvaultClientFactory.createDefaultFraudvaultClient(fraudvaultClientConfiguration);
 ```
-##¿How you I invoke the Fraudvault services?
+##¿How do you invoke the Fraudvault services?
 With the instance of the client you will be able to use the different Fraudvault services. For example to call the prevalidation service:
 
-1 Create the object with the data of the transaction(the order) that you want to prevalidate, a simple example could be:
+First, create the object with the data of the transaction(the order) that you want to prevalidate, a simple example could be:
 ```java
 Transaction transaction = Transaction.builder()
 										.transactionId(theTransactionId)
@@ -53,17 +53,15 @@ Buyer.builder()
 		.email("the buyer email")
 		.build();
 ```		
-2 With the transaction, now you can call the Fraudvault service:
+With the transaction, now you can call the Fraudvault service:
 ```java
 FraudvaultPrevalidation prevalidationResponse = fraudvaultClient.prevalidate(transaction);
 ```
-And you will be able to get the information of your interest from the service reponse. 
-For example:
-For get the decision made by Fraudvault:
+And you will be able to get the information of your interest from the service reponse. For example, to get the decision made by Fraudvault:
 ```java
 	prevalidationResponse.getDecision();
 ```
-For know if there was an error when evaluating the transaction:
+To know if there was an error when evaluating the transaction:
 ```java
 	prevalidationResponse.getErrorCode();
 ```
