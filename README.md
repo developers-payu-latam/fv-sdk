@@ -20,9 +20,9 @@ With this SDK you will be able to integrate the Fraudvault services in a quick a
 
 ##¿What data do you need for access our Fraudvault services?
 
-You will need some aunthentication credentials for access our services, to obtain them contact us. You will need:
-* Your unique client identifier
-* Your user login and password to authentication
+You will need some aunthentication credentials for access our services, to obtain them contact us. You will need:  
+* Your unique client identifier  
+* Your user login and password to authentication  
 
 ##¿How you can get an instance of the Fraudvault client?
 
