@@ -3,7 +3,7 @@
  * http://www.payu.com.co
  * Date: 19 de oct. de 2017
  */
-package com.payulatam.fraudvault.model.response.xml;
+package com.payulatam.fraudvault.model.response.soap;
 
 import java.util.Date;
 
@@ -20,7 +20,7 @@ import lombok.Data;
  * @author <a href="mailto:claudia.rodriguez@payulatam.com">Claudia Jimena Rodriguez</a>
  */
 @Data
-public class FraudvaultBaseResponse {
+public class FraudvaultBaseResponseSoapWrapper {
 
 	/** Date of the response generation. */
 	@Element(name = "fecha", required = false)

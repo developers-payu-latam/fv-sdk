@@ -12,8 +12,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
-import org.apache.log4j.Logger;
 import org.junit.Assert;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
 
@@ -23,10 +24,6 @@ import com.payulatam.fraudvault.api.client.exception.FraudvaultException;
 import com.payulatam.fraudvault.client.factory.FraudvaultClientFactory;
 import com.payulatam.fraudvault.model.request.*;
 import com.payulatam.fraudvault.model.response.*;
-import com.payulatam.fraudvault.model.response.xml.IpAddressLocation;
-import com.payulatam.fraudvault.model.response.xml.IssuerBank;
-import com.payulatam.fraudvault.model.response.xml.ListMatch;
-import com.payulatam.fraudvault.model.response.xml.TriggeredRule;
 
 /**
  * Integration tests of the Retrofit client implementation using the Fraudvault service in the STG endpoint. 
@@ -42,7 +39,7 @@ public class RetrofitClientIT {
 	private static final String TEST_WS_BASE_URL = "https://pruebas.maf.pagosonline.net/ws";
 
 	/** Class logger. */
-	private final Logger logger = Logger.getLogger(getClass());
+	  private final Logger logger = LoggerFactory.getLogger(getClass());
 	
 	private String trxId;
 	
@@ -54,9 +51,11 @@ public class RetrofitClientIT {
 	@BeforeSuite
 	private void init(){
 		trxId = "trx-001" + new Random().nextInt();
-		Credentials credentials = Credentials .builder(TEST_CLIENT_ID, TEST_USER_LOGIN, TEST_USER_PASSWORD).build();
+		Credentials credentials = new Credentials(TEST_CLIENT_ID, TEST_USER_LOGIN, TEST_USER_PASSWORD);
 		fraudvaultClient = FraudvaultClientFactory.createDefaultFraudvaultClient(
-				FraudvaultClientConfiguration.builder(credentials, TEST_WS_BASE_URL).build());
+				FraudvaultClientConfiguration.builder().credentials(credentials)
+				.fraudvaultServiceBaseUrl(TEST_WS_BASE_URL)
+				.build());
 	}
 	
 	/**
@@ -66,7 +65,7 @@ public class RetrofitClientIT {
 	@Test
 	public void testPrevalidate() throws FraudvaultException{
 		logger.debug("************* PREVALIDATION TEST IN STG *************");
-		FraudvaultPrevalidation response = fraudvaultClient.prevalidate(getTransaction(trxId));
+		FraudvaultPrevalidationResponse response = fraudvaultClient.prevalidate(getTransaction(trxId));
 		assertPrevalidationResponse(response);
 	}
 
@@ -77,7 +76,7 @@ public class RetrofitClientIT {
 	@Test
 	public void testEvaluate() throws FraudvaultException {
 		logger.debug("************* EVALUATE TEST IN STG *************");
-		FraudvaultPrevalidation response = fraudvaultClient.evaluate(getTransaction(trxId));
+		FraudvaultPrevalidationResponse response = fraudvaultClient.evaluate(getTransaction(trxId));
 		assertPrevalidationResponse(response);
 	}
 
@@ -85,10 +84,11 @@ public class RetrofitClientIT {
 	 * Assert the postconditions of a prevalidation response.
 	 * @param response
 	 */
-	private void assertPrevalidationResponse(FraudvaultPrevalidation response){
+	private void assertPrevalidationResponse(FraudvaultPrevalidationResponse response){
 		Assert.assertNotNull(response);
+		Assert.assertFalse(response.hasError());
 		printPrevalidationDetail(response);
-		Assert.assertEquals(new Integer(1), response.getGeneralAnswerCode());
+		Assert.assertEquals(GeneralAnswerCode.OK, response.getGeneralAnswerCode());
 		Assert.assertNotNull(response.getResponseDate());
 		Assert.assertNull(response.getGeneralErrorCode());
 		Assert.assertNull(response.getGeneralErrorMessage());
@@ -106,9 +106,10 @@ public class RetrofitClientIT {
 	@Test
 	private void assertNonExistentTrxPrevalidationResponse() throws FraudvaultException{
 		logger.debug("************* PREVALIDATION WITH INVALID DATA TEST IN STG *************");
-		FraudvaultPrevalidation response = fraudvaultClient.prevalidate(Transaction.builder().transactionId("non-existent-id").build());
+		FraudvaultPrevalidationResponse response = fraudvaultClient.prevalidate(Transaction.builder().transactionId("non-existent-id").build());
 		Assert.assertNotNull(response);
-		Assert.assertEquals(new Integer(2), response.getGeneralAnswerCode());
+		Assert.assertTrue(response.hasError());
+		Assert.assertEquals(GeneralAnswerCode.FAIL, response.getGeneralAnswerCode());
 		Assert.assertNotNull(response.getResponseDate());
 		Assert.assertNotNull(response.getGeneralErrorCode());
 		Assert.assertNotNull(response.getGeneralErrorMessage());
@@ -123,9 +124,10 @@ public class RetrofitClientIT {
 	@Test(dependsOnMethods = {"testPrevalidate"})
 	public void testPostvalidate() throws FraudvaultException {
 		logger.debug("************* POSVALIDATION TEST IN STG *************");
-		FraudvaultPosvalidation response = fraudvaultClient.posvalidate(trxId);
+		FraudvaultPosvalidationResponse response = fraudvaultClient.posvalidate(trxId);
 		Assert.assertNotNull(response);
-		Assert.assertEquals(new Integer(1), response.getGeneralAnswerCode());
+		Assert.assertFalse(response.hasError());
+		Assert.assertEquals(GeneralAnswerCode.OK, response.getGeneralAnswerCode());
 		Assert.assertNotNull(response.getResponseDate());
 		Assert.assertNull(response.getGeneralErrorCode());
 		Assert.assertNull(response.getGeneralErrorMessage());
@@ -145,16 +147,17 @@ public class RetrofitClientIT {
 	@Test(dependsOnMethods = {"testPrevalidate"})
 	public void testQueryState() throws FraudvaultException {
 		logger.debug("************* STATE QUERY TEST IN STG *************");
-		FraudvaultStateQuery response = fraudvaultClient.queryTransactionState(trxId);
+		FraudvaultStateQueryResponse response = fraudvaultClient.queryTransactionState(trxId);
 		Assert.assertNotNull(response);
-		Assert.assertEquals(new Integer(1), response.getGeneralAnswerCode());
+		Assert.assertFalse(response.hasError());
+		Assert.assertEquals(GeneralAnswerCode.OK, response.getGeneralAnswerCode());
 		Assert.assertNotNull(response.getResponseDate());
 		Assert.assertNull(response.getGeneralErrorCode());
 		Assert.assertNull(response.getGeneralErrorMessage());
 		Assert.assertNotNull(response.getTransactionId());
 		Assert.assertNotNull(response.getState());
 		Assert.assertNotNull(response.getAnswerCode());
-		Assert.assertEquals(new Integer(1), response.getAnswerCode());
+		Assert.assertEquals(GeneralAnswerCode.OK, response.getAnswerCode());
 		Assert.assertNull(response.getErrorMessage());
 		logger.debug("-GeneralAnswerCode: " + response.getGeneralAnswerCode() + " -GeneralErrorCode: "
 				+ response.getGeneralErrorCode()
@@ -172,7 +175,7 @@ public class RetrofitClientIT {
 	@Test(dependsOnMethods = {"testPrevalidate"})
 	public void testUpdateState() throws FraudvaultException {
 		logger.debug("************* UPDATE STATE TEST IN STG *************");
-		FraudvaultStateUpdate response = fraudvaultClient.updateTransactionState(trxId, 11L);
+		FraudvaultStateUpdateResponse response = fraudvaultClient.updateTransactionState(trxId, 11L);
 		logger.debug("-GeneralAnswerCode: " + response.getGeneralAnswerCode() + " -GeneralErrorCode: "
 				+ response.getGeneralErrorCode()
 				+ " -GeneralErrorMessage: " + response.getGeneralErrorMessage() + " -TransactionID: "
@@ -181,14 +184,15 @@ public class RetrofitClientIT {
 				+ response.getAnswerCode()
 				+ " -ErrorMessage: " + response.getErrorMessage());
 		Assert.assertNotNull(response);
-		Assert.assertEquals( new Integer(1), response.getGeneralAnswerCode());
+		Assert.assertFalse(response.hasError());
+		Assert.assertEquals(GeneralAnswerCode.OK, response.getGeneralAnswerCode());
 		Assert.assertNotNull(response.getResponseDate());
 		Assert.assertNull(response.getGeneralErrorCode());
 		Assert.assertNull(response.getGeneralErrorMessage());	
 		Assert.assertNotNull(response.getTransactionId());
 		Assert.assertEquals(response.getTransactionId(), trxId);
 		Assert.assertNotNull(response.getAnswerCode());
-		Assert.assertEquals(new Integer(1), response.getAnswerCode());
+		Assert.assertEquals(GeneralAnswerCode.OK, response.getAnswerCode());
 		Assert.assertNull(response.getErrorMessage());
 	}
 	
@@ -200,16 +204,17 @@ public class RetrofitClientIT {
 	@Test
 	public void testTrxNonExistentStateUpdate() throws FraudvaultException {
 		logger.debug("************* STATE QUERY WITH INVALID ID TEST IN STG *************");
-		FraudvaultStateUpdate response = fraudvaultClient.updateTransactionState("trx-non-existID", 11L);
+		FraudvaultStateUpdateResponse response = fraudvaultClient.updateTransactionState("trx-non-existID", 11L);
 		Assert.assertNotNull(response);
-		Assert.assertEquals(new Integer(2),response.getGeneralAnswerCode());
+		Assert.assertTrue(response.hasError());
+		Assert.assertEquals(GeneralAnswerCode.FAIL, response.getGeneralAnswerCode());
 		Assert.assertNotNull(response.getResponseDate());
 		Assert.assertNotNull(response.getGeneralErrorCode());
 		Assert.assertNotNull(response.getGeneralErrorMessage());	
 		Assert.assertNotNull(response.getTransactionId());
 		Assert.assertEquals("trx-non-existID", response.getTransactionId());
 		Assert.assertNotNull(response.getAnswerCode());
-		Assert.assertEquals(new Integer(2), response.getAnswerCode());
+		Assert.assertEquals(GeneralAnswerCode.FAIL, response.getAnswerCode());
 		Assert.assertNotNull(response.getErrorMessage());
 		logger.debug("-GeneralAnswerCode: " + response.getGeneralAnswerCode() + " -GeneralErrorCode: "
 				+ response.getGeneralErrorCode()
@@ -225,7 +230,7 @@ public class RetrofitClientIT {
 	 * 
 	 * @param response prevalidation response.
 	 */
-	private void printPrevalidationDetail(FraudvaultPrevalidation response){
+	private void printPrevalidationDetail(FraudvaultPrevalidationResponse response){
 		
 		logger.debug("-- Transaction ID: " + response.getTransactionId());
 		logger.debug("-- Decision: " + response.getDecision());
@@ -242,36 +247,36 @@ public class RetrofitClientIT {
 		logger.debug("-- ResponseDate: " + response.getResponseDate());
 		
 		if (response.getAlerts() != null) {
-			for (String fraudvaultAlert : response.getAlerts()) {
+			for (Alert fraudvaultAlert : response.getAlerts()) {
 				logger.debug("-- alert: " + fraudvaultAlert);
 			}
 		}
 		if (response.getActions() != null) {
-			for (String fraudvaultAlert : response.getActions()) {
+			for (Action fraudvaultAlert : response.getActions()) {
 				logger.debug("-- accion: " + fraudvaultAlert);
 			}
 		}
 
 		if (response.getTriggeredRules() != null) {
 			for (TriggeredRule filter : response.getTriggeredRules()) {
-				logger.debug("-- filters: " + filter.getRuleName() + " - " + filter.getFilteredAttributeName() 
-				+ " - " + filter.getFilteredValue() + " - " + filter.getRuleConfiguredValue()+ " - " + filter.getOperator());
+				logger.debug("-- filters: " + filter.getRuleName() + " - " + filter.getTransactionFieldName()
+				+ " - " + filter.getTransactionFieldValue() + " - " + filter.getRuleConfiguredValue()+ " - " + filter.getOperator());
 			}
 		}
 
 		ListMatch blackLists = response.getBlackListsMatching();
 		if (blackLists != null) {
-			logger.debug("-- lista negra: " + blackLists.isMatch() + " - " + blackLists.getParameter());
+			logger.debug("-- lista negra: " + blackLists.isMatch() + " - " + blackLists.getTransactionFieldName());
 		}
 		
 		ListMatch whiteLists = response.getBlackListsMatching();
 		if (whiteLists != null) {
-			logger.debug("-- lista blanca: " + whiteLists.isMatch() + " - " + whiteLists.getParameter());
+			logger.debug("-- lista blanca: " + whiteLists.isMatch() + " - " + whiteLists.getTransactionFieldName());
 		}
 		
 		ListMatch temporaryLists = response.getTemporaryListsMatching();
 		if (temporaryLists != null) {			
-			logger.debug("-- lista temporal: " + temporaryLists.isMatch() + " - " + temporaryLists.getParameter());
+			logger.debug("-- lista temporal: " + temporaryLists.isMatch() + " - " + temporaryLists.getTransactionFieldName());
 		}
 		
 		IssuerBank issuerBank = response.getIssuerBank();
@@ -321,16 +326,16 @@ public class RetrofitClientIT {
 				.creationDate(new Date()).test(false).countryIso("CO").origin(1100)
 				.description("desc").value(new BigDecimal(180000)).extra1("extra1")
 				.sellerUser(Seller.builder().id("777").clasificationCode("clas").build())
-				.buyerUser(Buyer.builder().id("53140140").names("Mary")
-						.surnames("Martinez").email("marym@test.com")
-						.footPrint(Footprint.builder().ipAddress("192.5.5.6")
+				.buyerUser(Buyer.builder().id("53140140").name("Mary")
+						.surname("Martinez").email("marym@test.com")
+						.footprint(Footprint.builder().ipAddress("192.5.5.6")
 								.userAgent(
 										"Mozilla/5.0 (Macintosh; Intel Mac) Gecko/20100101 Firefox/42.0")
 								.deviceSignature("cookie-signature1111").build())
 						.build())
 				.paymentInformation(
-						PaymentInformation.builder().paymentMethodType(1).paymentMethod(11)
-								.pan("54685300008820584").expirationDate("2021/05")
+						PaymentInformation.builder().paymentMethodType(PaymentMethodType.CREDIT_CARD).paymentMethod(11)
+								.pan("54685300008820584").expirationDate("05", "21")
 								.bin("546853").currencyIso("COP")
 								.installmentsNumber(2)
 								.holder(AccountHolder.builder().name("Mary Martinez")
@@ -346,7 +351,7 @@ public class RetrofitClientIT {
 								.build())
 						.bookingOffice(Office.builder().id("123Office").country("CO").build())
 						.sellerOffice(Office.builder().id("456Office").country("CO").build())
-						.tripType("RT")
+						.tripType(TripType.RT)
 						.passengers(passengers)
 						.flightPaths(flightPaths)
 						.build())
@@ -358,7 +363,7 @@ public class RetrofitClientIT {
 	 * 
 	 * @param response posvalidation response.
 	 */
-	private void printPosvalidationDetail(FraudvaultPosvalidation response){
+	private void printPosvalidationDetail(FraudvaultPosvalidationResponse response){
 		
 		logger.debug("-- TransactionId: " + response.getTransactionId());
 		logger.debug("-- Decision: " + response.getDecision());
@@ -372,13 +377,15 @@ public class RetrofitClientIT {
 		logger.debug("-- ResponseDate: " + response.getResponseDate());
 		
 		if (response.getActions() != null) {
-			for (String fraudvaultAlert : response.getActions()) {
-				logger.debug("-- accion: " + fraudvaultAlert);
+			for (Action fraudvaultAction : response.getActions()) {
+				logger.debug("-- accion: " + fraudvaultAction);
 			}
 		}
 		if (response.getTriggeredRules() != null) {
 			for (TriggeredRule filter : response.getTriggeredRules()) {
-				logger.debug("-- filters: " + filter.getRuleName() + " - " + filter.getFilteredAttributeName() + " - " + filter.getFilteredValue());
+				logger.debug("-- filters: " + filter.getRuleName() + " - "
+						+ filter.getTransactionFieldName() + " - "
+						+ filter.getTransactionFieldValue());
 			}
 		}
 	}

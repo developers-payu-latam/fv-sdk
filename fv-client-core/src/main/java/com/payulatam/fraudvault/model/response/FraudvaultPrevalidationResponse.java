@@ -7,12 +7,6 @@ package com.payulatam.fraudvault.model.response;
 
 import java.util.List;
 
-import com.payulatam.fraudvault.model.response.xml.FraudvaultBaseResponse;
-import com.payulatam.fraudvault.model.response.xml.IpAddressLocation;
-import com.payulatam.fraudvault.model.response.xml.IssuerBank;
-import com.payulatam.fraudvault.model.response.xml.ListMatch;
-import com.payulatam.fraudvault.model.response.xml.TriggeredRule;
-
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -25,33 +19,27 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @Builder
-public class FraudvaultPrevalidation extends FraudvaultBaseResponse {
+public class FraudvaultPrevalidationResponse extends FraudvaultBaseResponse {
 
-	/**
-	 * A code indicating the decision made by Fraudvault, this is:
-	 * 1: If the transaction must be rejected.
-	 * 2: If the transaction must be stopped.
-	 * 3: If the transaction must be approved.
-	 * 7: If the transaction must be monitored in pre-validation
-	 **/
-	private Integer decision;
+	/** The decision made by Fraudvault. */
+	private PrevalidationDecision decision;
 
 	/** The identifier of the transaction. */
 	private String transactionId;
 
 	/**
 	 * A list of alerts that can be thrown by Fraudvault. For example:
-	 * TC_INTERNACIONAL: if the credit card is international.
-	 * DESC_CONTIENE_PALABRA_SOSPECHOSA: if the description sent in the transaction data contains
+	 * INTERNATIONAL_CARD: if the credit card is international.
+	 * DESCRIPTION_HAS_SUSPICIOUS_WORD: if the description sent in the transaction data contains
 	 * any suspicious word in the Fraudvault database.
 	 */
-	private List<String> alerts;
+	private List<Alert> alerts;
 
 	/**
-	 * They are the actions triggered in the execution of rules. The actions triggered are according
+	 * The actions triggered in the execution of rules. The actions triggered are according
 	 * to transaction data that match with the rules profiles configuration in Fraudvault.
 	 */
-	private List<String> actions;
+	private List<Action> actions;
 
 	/** Number of fraudulent transactions that are similar to the current transaction. */
 	private Integer similarTransactionsNumber;
@@ -99,12 +87,49 @@ public class FraudvaultPrevalidation extends FraudvaultBaseResponse {
 	/** Time in milliseconds that Fraudvault takes to evaluate the transaction. */
 	private Integer evaluationTime;
 
-	/** A value from 2001 to 2999 returned if there is an error when evaluating a transaction. */
-	private Integer errorCode;
+	/** The error code if there is an error when evaluating a transaction. */
+	private ErrorCode errorCode;
 
 	/** Error message associated with the evaluation of the transaction. */
 	private String errorMessage;
 
-	private boolean validateWithCreditBureau;
+	private boolean validatedWithCreditBureau;
+	
+	/**
+	 * Indicates if there was an error in the prevalidation process.
+	 * 
+	 * @return true if there was an error otherwise false.
+	 */
+	@Override
+	public boolean hasError() {
+		return super.hasError() || errorCode != null;
+	}
+	
+	/**
+	 * Indicates if some field in the transaction is contained in Fraudvault black lists.
+	 * 
+	 * @return true if some field in the transaction is contained in Fraudvault black lists otherwise false. 
+	 */
+	public boolean matchWithBlackList(){
+		return blackListsMatching != null && blackListsMatching.isMatch();
+	}
+	
+	/**
+	 * Indicates if some field in the transaction is contained in Fraudvault white lists.
+	 * 
+	 * @return true if some field in the transaction is contained in Fraudvault white lists otherwise false. 
+	 */
+	public boolean matchWithWhiteList(){
+		return whiteListsMatching != null && whiteListsMatching.isMatch();
+	}
+	
+	/**
+	 * Indicates if some field in the transaction is contained in Fraudvault white lists.
+	 * 
+	 * @return true if some field in the transaction is contained in Fraudvault white lists otherwise false. 
+	 */
+	public boolean matchWithTemporaryList(){
+		return temporaryListsMatching != null && temporaryListsMatching.isMatch();
+	}
 	
 }

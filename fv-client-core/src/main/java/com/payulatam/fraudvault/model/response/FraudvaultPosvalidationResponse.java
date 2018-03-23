@@ -7,9 +7,6 @@ package com.payulatam.fraudvault.model.response;
 
 import java.util.List;
 
-import com.payulatam.fraudvault.model.response.xml.FraudvaultBaseResponse;
-import com.payulatam.fraudvault.model.response.xml.TriggeredRule;
-
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -22,16 +19,11 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @Builder
-public class FraudvaultPosvalidation extends FraudvaultBaseResponse{
+public class FraudvaultPosvalidationResponse extends FraudvaultBaseResponse{
 	
 	/**
-	 * A code indicating the decision made by Fraudvault, this is:
-	 * 4: If the transaction must be reversed.
-	 * 5: If the transaction must be validated.
-	 * 6: If the transaction must be released.
-	 * 8: If the transaction must be monitored in posvalidation
-	 **/
-	private Integer decision;
+	 * The decision made by Fraudvault. **/
+	private PosvalidationDecision decision;
 
 	/** The identifier of the transaction. */
 	private String transactionId;
@@ -40,7 +32,7 @@ public class FraudvaultPosvalidation extends FraudvaultBaseResponse{
 	 * They are the actions triggered in the execution of rules. The actions triggered are according
 	 * to transaction data that match with the rules profiles configuration in Fraudvault.
 	 */
-	private List<String> actions;
+	private List<Action> actions;
 
 	/** Number of fraudulent transactions that are similar to the current transaction. */
 	private Integer similarTransactionsNumber;
@@ -55,10 +47,20 @@ public class FraudvaultPosvalidation extends FraudvaultBaseResponse{
 	/** Time in milliseconds that Fraudvault takes to evaluate the transaction. */
 	private Integer evaluationTime;
 
-	/** A value from 2001 to 2999 returned if there is an error when evaluating a transaction. */
-	private Integer errorCode;
+	/** The error code if there is an error when evaluating a transaction. */
+	private ErrorCode errorCode;
 
 	/** Error message associated with the evaluation of the transaction. */
 	private String errorMessage;
+	
+	/**
+	 * Indicates if there was an error in the posvalidation process.
+	 * 
+	 * @return true if there was an error otherwise false.
+	 */
+	@Override
+	public boolean hasError() {
+		return super.hasError() || errorCode != null;
+	}
 
 }

@@ -121,6 +121,8 @@ public class Transaction {
 	@Element(name = "fecha-ultima-transaccion", required = false)
 	@Convert(DateConverter.class)
 	private Date lastTransactionDate;
+	
+	private static Serializer serializer = new Persister(new AnnotationStrategy());
 
 	/**
 	 * Serializes the this {@code Transaction} object to XML data.
@@ -129,9 +131,7 @@ public class Transaction {
 	 * @throws XmlConversionException if the object cannot be serialized.
 	 */
 	public String toXml() throws XmlConversionException {
-
-		try {
-			Serializer serializer = new Persister(new AnnotationStrategy());
+		try {			
 			Writer writer = new StringWriter();
 			serializer.write(this, writer);
 			return writer.toString();

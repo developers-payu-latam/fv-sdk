@@ -24,14 +24,14 @@ public class Buyer {
 	private String id;
 
 	@Element(name = "nombres", required = false)
-	private String names;
+	private String name;
 
 	@Element(name = "apellidos", required = false)
-	private String surnames;
+	private String surname;
 
 	@Element(name = "correo-electronico", required = false)
 	private String email;
 
 	@Element(name = "huella", required = false)
-	private Footprint footPrint;
+	private Footprint footprint;
 }

@@ -1,4 +1,4 @@
-package com.payulatam.fraudvault.model.response.xml;
+package com.payulatam.fraudvault.model.response;
 
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;
@@ -6,7 +6,7 @@ import org.simpleframework.xml.Root;
 import lombok.Data;
 
 /**
- * Encapusules the data of the credit card issuer bank.
+ * Data of the credit/debit card issuer bank.
  * 
  * @author <a href="mailto:claudia.rodriguez@payulatam.com">Claudia Jimena Rodriguez</a>
  */
@@ -14,15 +14,16 @@ import lombok.Data;
 @Data
 public class IssuerBank {
 
-	/** The country ISO code. */
+	/** The two letter ISO 3166-1 alpha-2 country code associated with the country of the bank 
+	 * issuing the card. For example: CO for Colombia and BR for Brazil. */
 	@Element(name = "codigo-iso-pais", required = false)
 	private String country;
 
-	/** The bank name. */
+	/** The bank name issuing the card. */
 	@Element(name = "banco", required = false)
 	private String bank;
 
-	/** The bank phone number. */
+	/** The bank phone number issuing the card. */
 	@Element(name = "telefono", required = false)
 	private String phoneNumber;
 

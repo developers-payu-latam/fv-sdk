@@ -17,7 +17,13 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import com.payulatam.fraudvault.api.client.exception.XmlConversionException;
-import com.payulatam.fraudvault.model.response.xml.*;
+import com.payulatam.fraudvault.model.response.ControlListsInformation;
+import com.payulatam.fraudvault.model.response.HeuristicAnalysis;
+import com.payulatam.fraudvault.model.response.IpAddressLocation;
+import com.payulatam.fraudvault.model.response.IssuerBank;
+import com.payulatam.fraudvault.model.response.ListMatch;
+import com.payulatam.fraudvault.model.response.TriggeredRule;
+import com.payulatam.fraudvault.model.response.soap.*;
 
 /**
  * Test for the conversions from XML data to objects with the XML response structure.
@@ -33,14 +39,14 @@ public class ResponseXmlConversionTest {
 	public void convertPrevalidationResponseContent() throws IOException, XmlConversionException{
 
 		String xmlResponse = cargarXml("responsePrevalidation.xml");
-		FraudvaultPrevalidationResponse response = FraudvaultPrevalidationResponse.fromXml(xmlResponse);
+		PrevalidationResponseSoapWrapper response = PrevalidationResponseSoapWrapper.fromXml(xmlResponse);
 		Assert.assertEquals(response.getGeneralAnswerCode(), new Integer(1));
 		Assert.assertNull(response.getGeneralErrorCode());
 		Assert.assertNull(response.getGeneralErrorMessage());
 		Assert.assertNotNull(response.getEvaluation());
 		Assert.assertEquals(response.getEvaluation().getDecision(), new Integer(1));
 
-		FraudvaultEvaluationDetail evaluationDetail = response.getEvaluation().getDetail();
+		EvaluationDetailSoapWrapper evaluationDetail = response.getEvaluation().getDetail();
 		Assert.assertNotNull(evaluationDetail);
 		Assert.assertEquals(evaluationDetail.getTransactionId(), "9194802");
 		Assert.assertNotNull(evaluationDetail.getActions());
@@ -76,12 +82,12 @@ public class ResponseXmlConversionTest {
 	public void convertQueryStateResponseContent() throws IOException, XmlConversionException{
 
 		String xmlResponse = cargarXml("responseQueryState.xml");
-		FraudvaultQueryStateResponse response = FraudvaultQueryStateResponse.fromXml(xmlResponse);
+		QueryStateResponseSoapWrapper response = QueryStateResponseSoapWrapper.fromXml(xmlResponse);
 		Assert.assertNotNull(response.getResponseDate());
 		Assert.assertEquals(response.getGeneralAnswerCode(), new Integer(1));
 		Assert.assertNull(response.getGeneralErrorCode());
 		Assert.assertNull(response.getGeneralErrorMessage());
-		FraudvaultStateOperationResponseContent responseContent = response
+		StateOperationResponseContentSoapWrapper responseContent = response
 				.getQueryStateResponseContent();
 		Assert.assertEquals(responseContent.getTransactionId(), "456602622");
 		Assert.assertEquals(responseContent.getState(), new Integer(11));
@@ -98,12 +104,12 @@ public class ResponseXmlConversionTest {
 	public void convertUpdateStateResponseContent() throws IOException, XmlConversionException{
 
 		String xmlResponse = cargarXml("responseUpdateState.xml");
-		FraudvaultUpdateStateResponse response = FraudvaultUpdateStateResponse.fromXml(xmlResponse);
+		UpdateStateResponseSoapWrapper response = UpdateStateResponseSoapWrapper.fromXml(xmlResponse);
 		Assert.assertNotNull(response.getResponseDate());
 		Assert.assertEquals(response.getGeneralAnswerCode(), new Integer(1));
 		Assert.assertNull(response.getGeneralErrorCode());
 		Assert.assertNull(response.getGeneralErrorMessage());
-		FraudvaultStateOperationResponseContent responseContent = response
+		StateOperationResponseContentSoapWrapper responseContent = response
 				.getUpdateStateResponseContent();
 		Assert.assertEquals(responseContent.getTransactionId(), "456602622");
 		Assert.assertEquals(responseContent.getAnswerCode(), new Integer(1));
@@ -119,18 +125,18 @@ public class ResponseXmlConversionTest {
 	public void convertPosvalidationResponseContent() throws IOException, XmlConversionException{
 
 		String xmlResponse = cargarXml("responsePosvalidation.xml");
-		FraudvaultPosvalidationResponse response = FraudvaultPosvalidationResponse
+		PosvalidationResponsesSoapWrapper response = PosvalidationResponsesSoapWrapper
 				.fromXml(xmlResponse);
 		Assert.assertNotNull(response.getResponseDate());
 		Assert.assertEquals(response.getGeneralAnswerCode(), new Integer(1));
 		Assert.assertNull(response.getGeneralErrorCode());
 		Assert.assertNull(response.getGeneralErrorMessage());
 
-		FraudvaultEvaluation evaluation = response.getEvaluation();
+		EvaluationSoapWrapper evaluation = response.getEvaluation();
 		Assert.assertNotNull(evaluation);
 		Assert.assertEquals(evaluation.getDecision(), new Integer(6));
 
-		FraudvaultEvaluationDetail evaluationDetail = evaluation.getDetail();
+		EvaluationDetailSoapWrapper evaluationDetail = evaluation.getDetail();
 		Assert.assertEquals(evaluationDetail.getTransactionId(), "9194802");
 		Assert.assertNull(evaluationDetail.getErrorCode());
 		Assert.assertNull(evaluationDetail.getErrorMessage());
@@ -153,7 +159,7 @@ public class ResponseXmlConversionTest {
 	public void convertPrevalidationResponseInputMissingTag() throws IOException, XmlConversionException{
 
 		String xmlResponse = cargarXml("responsePreInputMissingTag.xml");
-		FraudvaultPosvalidationResponse response = FraudvaultPosvalidationResponse.fromXml(xmlResponse);
+		PosvalidationResponsesSoapWrapper response = PosvalidationResponsesSoapWrapper.fromXml(xmlResponse);
 		Assert.assertNotNull(response.getResponseDate());
 		Assert.assertEquals(response.getGeneralAnswerCode(), new Integer(2));
 		Assert.assertNotNull(response.getGeneralErrorCode());
@@ -171,14 +177,14 @@ public class ResponseXmlConversionTest {
 	public void convertQueryStateResponseTrxIdInvalid() throws IOException, XmlConversionException{
 
 		String xmlResponse = cargarXml("responseQueryStateTrxIdInvalid.xml");
-		FraudvaultQueryStateResponse response = FraudvaultQueryStateResponse.fromXml(xmlResponse);
+		QueryStateResponseSoapWrapper response = QueryStateResponseSoapWrapper.fromXml(xmlResponse);
 		Assert.assertNotNull(response.getResponseDate());
 		Assert.assertEquals(response.getGeneralAnswerCode(), new Integer(2));
 		Assert.assertNotNull(response.getGeneralErrorCode());
 		Assert.assertEquals(response.getGeneralErrorCode(), new Integer(1007));
 		Assert.assertNotNull(response.getGeneralErrorMessage());
 
-		FraudvaultStateOperationResponseContent responseContent = response.getQueryStateResponseContent();
+		StateOperationResponseContentSoapWrapper responseContent = response.getQueryStateResponseContent();
 		Assert.assertNotNull(responseContent);
 		Assert.assertNotNull(responseContent.getAnswerCode());
 		Assert.assertEquals(responseContent.getAnswerCode(), new Integer(2));
@@ -193,7 +199,7 @@ public class ResponseXmlConversionTest {
 	 * 
 	 * @param evaluationDetail evaluation data.
 	 */
-	private void validateIpAddressLocation(FraudvaultEvaluationDetail evaluationDetail) {
+	private void validateIpAddressLocation(EvaluationDetailSoapWrapper evaluationDetail) {
 
 		IpAddressLocation ipAddressLocation = evaluationDetail.getIpAddressLocation();
 		Assert.assertNotNull(ipAddressLocation);
@@ -213,7 +219,7 @@ public class ResponseXmlConversionTest {
 	 * 
 	 * @param evaluationDetail evaluation data.
 	 */
-	private void validateIssuerBank(FraudvaultEvaluationDetail evaluationDetail) {
+	private void validateIssuerBank(EvaluationDetailSoapWrapper evaluationDetail) {
 
 		IssuerBank issuerBank = evaluationDetail.getIssuerBank();
 		Assert.assertNotNull(issuerBank);
@@ -227,7 +233,7 @@ public class ResponseXmlConversionTest {
 	 * 
 	 * @param evaluationDetail evaluation data.
 	 */
-	private void validateHeuristicAnalysis(FraudvaultEvaluationDetail evaluationDetail) {
+	private void validateHeuristicAnalysis(EvaluationDetailSoapWrapper evaluationDetail) {
 
 		HeuristicAnalysis heuristicAnalysis = evaluationDetail.getHeuristicAnalysis();
 		Assert.assertNotNull(heuristicAnalysis);
@@ -240,23 +246,23 @@ public class ResponseXmlConversionTest {
 	 * 
 	 * @param evaluationDetail evaluation data.
 	 */
-	private void validateTriggeredRules(FraudvaultEvaluationDetail evaluationDetail) {
+	private void validateTriggeredRules(EvaluationDetailSoapWrapper evaluationDetail) {
 
 		List<TriggeredRule> triggeredRules = evaluationDetail.getRules();
 		Assert.assertNotNull(triggeredRules);
 		Assert.assertEquals(triggeredRules.size(), 2);
 		TriggeredRule rule1 = triggeredRules.get(0);
 		Assert.assertEquals(rule1.getRuleName(), "regla_test [MONITOREAR]");
-		Assert.assertEquals(rule1.getFilteredAttributeName(), "Documento del comprador");
+		Assert.assertEquals(rule1.getTransactionFieldName(), "Documento del comprador");
 		Assert.assertEquals(rule1.getRuleConfiguredValue(), "12345678");
-		Assert.assertEquals(rule1.getFilteredValue(), "12345678");
+		Assert.assertEquals(rule1.getTransactionFieldValue(), "12345678");
 		Assert.assertEquals(rule1.getOperator(), "IGUAL");
 
 		TriggeredRule rule2 = triggeredRules.get(1);
 		Assert.assertEquals(rule2.getRuleName(), "det_cedula");
-		Assert.assertEquals(rule2.getFilteredAttributeName(), "Documento Comprador");
+		Assert.assertEquals(rule2.getTransactionFieldName(), "Documento Comprador");
 		Assert.assertEquals(rule2.getRuleConfiguredValue(), "53140140");
-		Assert.assertEquals(rule2.getFilteredValue(), "53140140");
+		Assert.assertEquals(rule2.getTransactionFieldValue(), "53140140");
 		Assert.assertEquals(rule2.getOperator(), "IGUAL");
 	}
 
@@ -265,7 +271,7 @@ public class ResponseXmlConversionTest {
 	 * 
 	 * @param evaluationDetail evaluation data.
 	 */
-	private void validateControlListsInformation(FraudvaultEvaluationDetail evaluationDetail) {
+	private void validateControlListsInformation(EvaluationDetailSoapWrapper evaluationDetail) {
 
 		ControlListsInformation listsInformation = evaluationDetail.getControlListsInformation();
 		Assert.assertNotNull(listsInformation);
@@ -276,7 +282,7 @@ public class ResponseXmlConversionTest {
 		ListMatch blackListsMatching = listsInformation.getBlackListsMatching();
 		Assert.assertNotNull(blackListsMatching);
 		Assert.assertEquals(blackListsMatching.isMatch(), true);
-		Assert.assertEquals(blackListsMatching.getParameter(), "correoElectronico");
+		Assert.assertEquals(blackListsMatching.getTransactionFieldName(), "correoElectronico");
 
 		ListMatch temporaryListsMatching = listsInformation.getTemporaryListsMatching();
 		Assert.assertNotNull(temporaryListsMatching);

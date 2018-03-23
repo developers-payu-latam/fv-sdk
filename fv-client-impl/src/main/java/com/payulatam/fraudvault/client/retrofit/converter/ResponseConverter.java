@@ -5,30 +5,26 @@
  */
 package com.payulatam.fraudvault.client.retrofit.converter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.payulatam.fraudvault.model.response.*;
-import com.payulatam.fraudvault.model.response.FraudvaultPosvalidation.FraudvaultPosvalidationBuilder;
-import com.payulatam.fraudvault.model.response.FraudvaultPrevalidation.FraudvaultPrevalidationBuilder;
-import com.payulatam.fraudvault.model.response.FraudvaultStateQuery.FraudvaultStateQueryBuilder;
-import com.payulatam.fraudvault.model.response.FraudvaultStateUpdate.FraudvaultStateUpdateBuilder;
-import com.payulatam.fraudvault.model.response.xml.ControlListsInformation;
-import com.payulatam.fraudvault.model.response.xml.FraudvaultEvaluation;
-import com.payulatam.fraudvault.model.response.xml.FraudvaultEvaluationDetail;
-import com.payulatam.fraudvault.model.response.xml.FraudvaultPosvalidationResponse;
-import com.payulatam.fraudvault.model.response.xml.FraudvaultPrevalidationResponse;
-import com.payulatam.fraudvault.model.response.xml.FraudvaultQueryStateResponse;
-import com.payulatam.fraudvault.model.response.xml.FraudvaultStateOperationResponseContent;
-import com.payulatam.fraudvault.model.response.xml.FraudvaultUpdateStateResponse;
-import com.payulatam.fraudvault.model.response.xml.HeuristicAnalysis;
+import com.payulatam.fraudvault.model.response.FraudvaultPosvalidationResponse.FraudvaultPosvalidationResponseBuilder;
+import com.payulatam.fraudvault.model.response.FraudvaultPrevalidationResponse.FraudvaultPrevalidationResponseBuilder;
+import com.payulatam.fraudvault.model.response.FraudvaultStateQueryResponse.FraudvaultStateQueryResponseBuilder;
+import com.payulatam.fraudvault.model.response.FraudvaultStateUpdateResponse.FraudvaultStateUpdateResponseBuilder;
+import com.payulatam.fraudvault.model.response.soap.*;
 
 /**
- * Utility class for convert the response data mapped with the XML response structure into simpler objects 
+ * Utility class for convert the response data mapped with the XML response structure into simpler
+ * objects
  * for returning to the Fraudvault service client.
  * 
  * @author <a href="mailto:claudia.rodriguez@payulatam.com" >Claudia Jimena Rodriguez</a>
  */
 public final class ResponseConverter {
-	
-	private ResponseConverter(){}
+
+	private ResponseConverter() {}
 
 	/**
 	 * Converts from a Fraudvault prevalidation response mapped with the XML response structure into
@@ -37,30 +33,38 @@ public final class ResponseConverter {
 	 * @param response the Fraudvault prevalidation response mapped with the XML response structure.
 	 * @return the Fraudvault prevalidation data.
 	 */
-	public static FraudvaultPrevalidation getFraudvaultPrevalidation(FraudvaultPrevalidationResponse response) {
+	public static FraudvaultPrevalidationResponse
+			getFraudvaultPrevalidation(PrevalidationResponseSoapWrapper response) {
 
-		FraudvaultPrevalidationBuilder prevalidationBuilder = FraudvaultPrevalidation.builder();
-		FraudvaultEvaluation evaluation = response.getEvaluation();
+		FraudvaultPrevalidationResponseBuilder prevalidationBuilder = FraudvaultPrevalidationResponse
+				.builder();
+		EvaluationSoapWrapper evaluation = response.getEvaluation();
 		if (evaluation != null) {
-			prevalidationBuilder.decision(evaluation.getDecision());
-			FraudvaultEvaluationDetail detail = evaluation.getDetail();
+			prevalidationBuilder.decision(PrevalidationDecision.getById(evaluation.getDecision()));
+			EvaluationDetailSoapWrapper detail = evaluation.getDetail();
 			if (detail != null) {
-				prevalidationBuilder.actions(detail.getActions()).alerts(detail.getAlerts())
-						.errorCode(detail.getErrorCode()).errorMessage(detail.getErrorMessage())
+				prevalidationBuilder.actions(getActions(detail.getActions()))
+						.alerts(getAlerts(detail.getAlerts()))
+						.errorMessage(detail.getErrorMessage())
 						.evaluationTime(detail.getEvaluationTime())
 						.ipAddressLocation(detail.getIpAddressLocation())
 						.ipProxy(detail.isIpProxy()).ispName(detail.getIspName())
 						.issuerBank(detail.getIssuerBank())
 						.similarTransactionsNumber(detail.getSimilarTransactionsNumber())
 						.transactionId(detail.getTransactionId()).triggeredRules(detail.getRules())
-						.validateWithCreditBureau(detail.isValidateWithCreditBureau());
+						.validatedWithCreditBureau(detail.isValidatedWithCreditBureau());
+				if (detail.getErrorCode() != null) {
+					prevalidationBuilder.errorCode(ErrorCode.getById(detail.getErrorCode()));
+				}
 
-				ControlListsInformation controlListInformation = detail.getControlListsInformation();
+				ControlListsInformation controlListInformation = detail
+						.getControlListsInformation();
 				if (controlListInformation != null) {
 					prevalidationBuilder
 							.blackListsMatching(controlListInformation.getBlackListsMatching())
 							.whiteListsMatching(controlListInformation.getWhiteListsMatching())
-							.temporaryListsMatching(controlListInformation.getTemporaryListsMatching());
+							.temporaryListsMatching(
+									controlListInformation.getTemporaryListsMatching());
 				}
 				HeuristicAnalysis heuristicAnalysis = detail.getHeuristicAnalysis();
 				if (heuristicAnalysis != null) {
@@ -70,12 +74,50 @@ public final class ResponseConverter {
 				}
 			}
 		}
-		FraudvaultPrevalidation prevalidation = prevalidationBuilder.build();
-		prevalidation.setGeneralErrorCode(response.getGeneralErrorCode());
+		FraudvaultPrevalidationResponse prevalidation = prevalidationBuilder.build();
+		if (response.getGeneralErrorCode() != null) {
+			prevalidation.setGeneralErrorCode(GeneralErrorCode.getById(response.getGeneralErrorCode()));
+		}
 		prevalidation.setGeneralErrorMessage(response.getGeneralErrorMessage());
 		prevalidation.setResponseDate(response.getResponseDate());
-		prevalidation.setGeneralAnswerCode(response.getGeneralAnswerCode());
+		if (response.getGeneralAnswerCode() != null) {
+			prevalidation.setGeneralAnswerCode(GeneralAnswerCode.getById(response.getGeneralAnswerCode()));
+		}
 		return prevalidation;
+	}
+
+	/**
+	 * Gets a list of Action from the actions strings list.
+	 * 
+	 * @param actions the strings of the actions.
+	 * @return list of Action values.
+	 */
+	private static List<Action> getActions(List<String> actions) {
+
+		List<Action> actionsList = new ArrayList<>();
+		if (actions != null) {
+			for (String action : actions) {
+				actionsList.add(Action.getByKey(action));
+			}
+		}
+		return actionsList;
+	}
+	
+	/**
+	 * Gets a list of Alert from the alerts strings list.
+	 * 
+	 * @param alerts the strings of the alerts.
+	 * @return list of Alert values.
+	 */
+	private static List<Alert> getAlerts(List<String> alerts) {
+
+		List<Alert> alertsList = new ArrayList<>();
+		if (alerts != null) {
+			for (String alert : alerts) {
+				alertsList.add(Alert.getByKey(alert));
+			}
+		}
+		return alertsList;
 	}
 
 	/**
@@ -85,26 +127,35 @@ public final class ResponseConverter {
 	 * @param response the Fraudvault prevalidation response mapped with the XML response structure.
 	 * @return the Fraudvault posvalidation data.
 	 */
-	public static FraudvaultPosvalidation getFraudvaultPosvalidation(FraudvaultPosvalidationResponse response) {
+	public static FraudvaultPosvalidationResponse
+			getFraudvaultPosvalidation(PosvalidationResponsesSoapWrapper response) {
 
-		FraudvaultPosvalidationBuilder posvalidationBuilder = FraudvaultPosvalidation.builder();
-		FraudvaultEvaluation evaluation = response.getEvaluation();
+		FraudvaultPosvalidationResponseBuilder posvalidationBuilder = FraudvaultPosvalidationResponse
+				.builder();
+		EvaluationSoapWrapper evaluation = response.getEvaluation();
 		if (evaluation != null) {
-			posvalidationBuilder.decision(evaluation.getDecision());
-			FraudvaultEvaluationDetail detail = evaluation.getDetail();
+			posvalidationBuilder.decision(PosvalidationDecision.getById(evaluation.getDecision()));
+			EvaluationDetailSoapWrapper detail = evaluation.getDetail();
 			if (detail != null) {
-				posvalidationBuilder.actions(detail.getActions())
-						.errorCode(detail.getErrorCode()).errorMessage(detail.getErrorMessage())
+				posvalidationBuilder.actions(getActions(detail.getActions()))
+						.errorMessage(detail.getErrorMessage())
 						.evaluationTime(detail.getEvaluationTime())
 						.similarTransactionsNumber(detail.getSimilarTransactionsNumber())
 						.transactionId(detail.getTransactionId()).triggeredRules(detail.getRules());
+				if (detail.getErrorCode() != null) {
+					posvalidationBuilder.errorCode(ErrorCode.getById(detail.getErrorCode()));
+				}
 			}
 		}
-		FraudvaultPosvalidation posvalidation = posvalidationBuilder.build();
-		posvalidation.setGeneralErrorCode(response.getGeneralErrorCode());
+		FraudvaultPosvalidationResponse posvalidation = posvalidationBuilder.build();
+		if (response.getGeneralErrorCode() != null) {
+			posvalidation.setGeneralErrorCode(GeneralErrorCode.getById(response.getGeneralErrorCode()));
+		}
 		posvalidation.setGeneralErrorMessage(response.getGeneralErrorMessage());
 		posvalidation.setResponseDate(response.getResponseDate());
-		posvalidation.setGeneralAnswerCode(response.getGeneralAnswerCode());
+		if (response.getGeneralAnswerCode() != null) {
+			posvalidation.setGeneralAnswerCode(GeneralAnswerCode.getById(response.getGeneralAnswerCode()));
+		}
 		return posvalidation;
 	}
 
@@ -115,24 +166,31 @@ public final class ResponseConverter {
 	 * @param response the Fraudvault State Query response mapped with the XML response structure.
 	 * @return the Fraudvault State Query data.
 	 */
-	public static FraudvaultStateQuery getFraudvaultStateQuery(FraudvaultQueryStateResponse response) {
-		
-		FraudvaultStateQueryBuilder queryStateBuilder = FraudvaultStateQuery.builder();		
-		FraudvaultStateOperationResponseContent queryResponseContent = response.getQueryStateResponseContent();
-		if(queryResponseContent != null){
+	public static FraudvaultStateQueryResponse
+			getFraudvaultStateQuery(QueryStateResponseSoapWrapper response) {
+
+		FraudvaultStateQueryResponseBuilder queryStateBuilder = FraudvaultStateQueryResponse
+				.builder();
+		StateOperationResponseContentSoapWrapper queryResponseContent = response
+				.getQueryStateResponseContent();
+		if (queryResponseContent != null) {
 			queryStateBuilder.transactionId(queryResponseContent.getTransactionId());
-			queryStateBuilder.state(queryResponseContent.getState());
-			queryStateBuilder.answerCode(queryResponseContent.getAnswerCode());
+			queryStateBuilder.state(TransactionState.getById(queryResponseContent.getState()));
+			if (queryResponseContent.getAnswerCode() != null) {
+				queryStateBuilder.answerCode(GeneralAnswerCode.getById(queryResponseContent.getAnswerCode()));
+			}
 			queryStateBuilder.errorMessage(queryResponseContent.getErrorMessage());
 		}
-		FraudvaultStateQuery queryState = queryStateBuilder.build();
-		queryState.setGeneralErrorCode(response.getGeneralErrorCode());
+		FraudvaultStateQueryResponse queryState = queryStateBuilder.build();
+		if (response.getGeneralErrorCode() != null) {
+			queryState.setGeneralErrorCode(GeneralErrorCode.getById(response.getGeneralErrorCode()));
+		}
 		queryState.setGeneralErrorMessage(response.getGeneralErrorMessage());
 		queryState.setResponseDate(response.getResponseDate());
-		queryState.setGeneralAnswerCode(response.getGeneralAnswerCode());
+		queryState.setGeneralAnswerCode(GeneralAnswerCode.getById(response.getGeneralAnswerCode()));
 		return queryState;
 	}
-	
+
 	/**
 	 * Converts from a Fraudvault update state response mapped with the XML response structure into
 	 * simpler object with the Fraudvault update state data.
@@ -140,23 +198,29 @@ public final class ResponseConverter {
 	 * @param response the Fraudvault update state response mapped with the XML response structure.
 	 * @return the Fraudvault update state data.
 	 */
-	public static FraudvaultStateUpdate getFraudvaultStateUpdate(FraudvaultUpdateStateResponse response) {
+	public static FraudvaultStateUpdateResponse
+			getFraudvaultStateUpdate(UpdateStateResponseSoapWrapper response) {
 
-		FraudvaultStateUpdateBuilder updateStateBuilder = FraudvaultStateUpdate.builder();		
-		FraudvaultStateOperationResponseContent updateResponseContent = response.getUpdateStateResponseContent();
-		if(updateResponseContent != null){
-			updateStateBuilder.transactionId(updateResponseContent.getTransactionId());			
-			updateStateBuilder.answerCode(updateResponseContent.getAnswerCode());
+		FraudvaultStateUpdateResponseBuilder updateStateBuilder = FraudvaultStateUpdateResponse
+				.builder();
+		StateOperationResponseContentSoapWrapper updateResponseContent = response
+				.getUpdateStateResponseContent();
+		if (updateResponseContent != null) {
+			updateStateBuilder.transactionId(updateResponseContent.getTransactionId());
+			if (updateResponseContent.getAnswerCode() != null) {
+				updateStateBuilder.answerCode(GeneralAnswerCode.getById(updateResponseContent.getAnswerCode()));
+			}
 			updateStateBuilder.errorMessage(updateResponseContent.getErrorMessage());
 		}
-		FraudvaultStateUpdate updateState = updateStateBuilder.build();
-		updateState.setGeneralErrorCode(response.getGeneralErrorCode());
+		FraudvaultStateUpdateResponse updateState = updateStateBuilder.build();
+		if (response.getGeneralErrorCode() != null) {
+			updateState.setGeneralErrorCode(GeneralErrorCode.getById(response.getGeneralErrorCode()));
+		}
 		updateState.setGeneralErrorMessage(response.getGeneralErrorMessage());
 		updateState.setResponseDate(response.getResponseDate());
-		updateState.setGeneralAnswerCode(response.getGeneralAnswerCode());
+		updateState
+				.setGeneralAnswerCode(GeneralAnswerCode.getById(response.getGeneralAnswerCode()));
 		return updateState;
 	}
-	
-
 
 }

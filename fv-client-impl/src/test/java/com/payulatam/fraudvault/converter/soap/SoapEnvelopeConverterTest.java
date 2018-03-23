@@ -120,7 +120,7 @@ public class SoapEnvelopeConverterTest {
 	 */
 	private Credentials getCredentials() {
 
-		return Credentials.builder(2L, "myLogin", "myPassword").build();
+		return new Credentials(2L, "myLogin", "myPassword");
 	}
 
 	/**
@@ -157,16 +157,16 @@ public class SoapEnvelopeConverterTest {
 				.creationDate(creation).test(true).countryIso("CO").origin(1100)
 				.description("desc").value(new BigDecimal(180000)).extra1("extra1")
 				.sellerUser(Seller.builder().id("777").clasificationCode("clas").build())
-				.buyerUser(Buyer.builder().id("53140140").names("Mary")
-						.surnames("Martinez").email("marym@test.com")
-						.footPrint(Footprint.builder().ipAddress("192.5.5.6")
+				.buyerUser(Buyer.builder().id("53140140").name("Mary")
+						.surname("Martinez").email("marym@test.com")
+						.footprint(Footprint.builder().ipAddress("192.5.5.6")
 								.userAgent(
 										"Mozilla/5.0 (Macintosh; Intel Mac) Gecko/20100101 Firefox/42.0")
 								.deviceSignature("cookie-signature1111").build())
 						.build())
 				.paymentInformation(
-						PaymentInformation.builder().paymentMethodType(1).paymentMethod(11)
-								.pan("54685300008820584").expirationDate("2021/02")
+						PaymentInformation.builder().paymentMethodType(PaymentMethodType.CREDIT_CARD).paymentMethod(11)
+								.pan("54685300008820584").expirationDate("02","2021")
 								.bin("546853").currencyIso("COP")
 								.installmentsNumber(2)
 								.holder(AccountHolder.builder().name("Mary Martinez")
@@ -181,7 +181,7 @@ public class SoapEnvelopeConverterTest {
 								.lastName("booking agent lastname").email("booking@test.com")
 								.build())
 						.bookingOffice(Office.builder().id("123Office").country("CO").build())
-						.tripType("RT")
+						.tripType(TripType.RT)
 						.passengers(passengers)
 						.flightPaths(flightPaths)
 						.build())

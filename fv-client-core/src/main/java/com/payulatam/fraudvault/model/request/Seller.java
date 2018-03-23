@@ -11,7 +11,7 @@ import lombok.Builder;
 import lombok.Data;
 
 /**
- * Data of a merchant seller.
+ * Merchant seller data.
  * 
  * @author <a href="mailto:claudia.rodriguez@payulatam.com">Claudia Jimena Rodriguez</a>
  */

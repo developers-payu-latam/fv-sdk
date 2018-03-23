@@ -14,19 +14,13 @@ import org.testng.annotations.Test;
 
 import com.payulatam.fraudvault.client.retrofit.converter.ResponseConverter;
 import com.payulatam.fraudvault.model.response.*;
-import com.payulatam.fraudvault.model.response.xml.ControlListsInformation;
-import com.payulatam.fraudvault.model.response.xml.FraudvaultEvaluation;
-import com.payulatam.fraudvault.model.response.xml.FraudvaultEvaluationDetail;
-import com.payulatam.fraudvault.model.response.xml.FraudvaultPosvalidationResponse;
-import com.payulatam.fraudvault.model.response.xml.FraudvaultPrevalidationResponse;
-import com.payulatam.fraudvault.model.response.xml.FraudvaultQueryStateResponse;
-import com.payulatam.fraudvault.model.response.xml.FraudvaultStateOperationResponseContent;
-import com.payulatam.fraudvault.model.response.xml.FraudvaultUpdateStateResponse;
-import com.payulatam.fraudvault.model.response.xml.HeuristicAnalysis;
-import com.payulatam.fraudvault.model.response.xml.IpAddressLocation;
-import com.payulatam.fraudvault.model.response.xml.IssuerBank;
-import com.payulatam.fraudvault.model.response.xml.ListMatch;
-import com.payulatam.fraudvault.model.response.xml.TriggeredRule;
+import com.payulatam.fraudvault.model.response.soap.EvaluationSoapWrapper;
+import com.payulatam.fraudvault.model.response.soap.EvaluationDetailSoapWrapper;
+import com.payulatam.fraudvault.model.response.soap.PosvalidationResponsesSoapWrapper;
+import com.payulatam.fraudvault.model.response.soap.PrevalidationResponseSoapWrapper;
+import com.payulatam.fraudvault.model.response.soap.QueryStateResponseSoapWrapper;
+import com.payulatam.fraudvault.model.response.soap.StateOperationResponseContentSoapWrapper;
+import com.payulatam.fraudvault.model.response.soap.UpdateStateResponseSoapWrapper;
 
 /**
  * Test for the conversions from the objects with the XML response structure to Fraudvault response
@@ -41,19 +35,19 @@ public class ResponseConverterTest {
 	@Test
 	public void getFraudvaultPrevalidationTest() {
 
-		FraudvaultPrevalidationResponse response = getPrevalidationresponse();
-		FraudvaultPrevalidation fvPrevalidation = ResponseConverter.getFraudvaultPrevalidation(response);
+		PrevalidationResponseSoapWrapper response = getPrevalidationresponse();
+		FraudvaultPrevalidationResponse fvPrevalidation = ResponseConverter.getFraudvaultPrevalidation(response);
 
-		Assert.assertEquals(fvPrevalidation.getGeneralAnswerCode(),response.getGeneralAnswerCode());
-		Assert.assertEquals(fvPrevalidation.getGeneralErrorCode(), response.getGeneralErrorCode());
+		Assert.assertEquals(fvPrevalidation.getGeneralAnswerCode(), GeneralAnswerCode.getById(response.getGeneralAnswerCode()));
+		Assert.assertEquals(fvPrevalidation.getGeneralErrorCode(), null);
 		Assert.assertEquals(fvPrevalidation.getGeneralErrorMessage(),response.getGeneralErrorMessage());
 		Assert.assertEquals(fvPrevalidation.getResponseDate(), response.getResponseDate());
 
-		FraudvaultEvaluation evaluation = response.getEvaluation();
+		EvaluationSoapWrapper evaluation = response.getEvaluation();
 		Assert.assertNotNull(evaluation);
-		Assert.assertEquals(fvPrevalidation.getDecision(), evaluation.getDecision());
+		Assert.assertEquals(fvPrevalidation.getDecision(), PrevalidationDecision.getById(evaluation.getDecision()));
 
-		FraudvaultEvaluationDetail responseDetail = evaluation.getDetail();
+		EvaluationDetailSoapWrapper responseDetail = evaluation.getDetail();
 		Assert.assertNotNull(responseDetail);
 		Assert.assertEquals(fvPrevalidation.getTransactionId(), responseDetail.getTransactionId());
 		Assert.assertEquals(fvPrevalidation.getEvaluationTime(),responseDetail.getEvaluationTime());
@@ -62,14 +56,14 @@ public class ResponseConverterTest {
 		Assert.assertEquals(fvPrevalidation.getIspName(), responseDetail.getIspName());
 		Assert.assertEquals(fvPrevalidation.getSimilarTransactionsNumber(),responseDetail.getSimilarTransactionsNumber());
 		Assert.assertEquals(fvPrevalidation.isIpProxy(), responseDetail.isIpProxy());
-		Assert.assertEquals(fvPrevalidation.isValidateWithCreditBureau(), responseDetail.isValidateWithCreditBureau());
+		Assert.assertEquals(fvPrevalidation.isValidatedWithCreditBureau(), responseDetail.isValidatedWithCreditBureau());
 
 		ListMatch blackLists = fvPrevalidation.getBlackListsMatching();
 		Assert.assertNotNull(blackLists);
 		Assert.assertEquals(blackLists.isMatch(),
 				responseDetail.getControlListsInformation().getBlackListsMatching().isMatch());
-		Assert.assertEquals(blackLists.getParameter(),
-				responseDetail.getControlListsInformation().getBlackListsMatching().getParameter());
+		Assert.assertEquals(blackLists.getTransactionFieldName(),
+				responseDetail.getControlListsInformation().getBlackListsMatching().getTransactionFieldName());
 		Assert.assertNull(fvPrevalidation.getTemporaryListsMatching());
 		Assert.assertNull(fvPrevalidation.getWhiteListsMatching());
 
@@ -78,12 +72,12 @@ public class ResponseConverterTest {
 		Assert.assertEquals(fvPrevalidation.getNeuronalNetworkGeneralScore(),
 				responseDetail.getHeuristicAnalysis().getGeneralScore());
 
-		List<String> actions = fvPrevalidation.getActions();
+		List<Action> actions = fvPrevalidation.getActions();
 		Assert.assertNotNull(actions);
-		Assert.assertEquals(actions.get(0), responseDetail.getActions().get(0));
+		Assert.assertEquals(actions.get(0), Action.getByKey(responseDetail.getActions().get(0)));
 
 		Assert.assertNotNull(fvPrevalidation.getAlerts());
-		Assert.assertEquals(fvPrevalidation.getAlerts().get(0), responseDetail.getAlerts().get(0));
+		Assert.assertEquals(fvPrevalidation.getAlerts().get(0), Alert.getByKey(responseDetail.getAlerts().get(0)));
 
 		IpAddressLocation ipAddressLocation = fvPrevalidation.getIpAddressLocation();
 		Assert.assertNotNull(ipAddressLocation);
@@ -104,10 +98,10 @@ public class ResponseConverterTest {
 		Assert.assertNotNull(fvPrevalidation.getTriggeredRules());
 		TriggeredRule triggeredRule = fvPrevalidation.getTriggeredRules().get(0);
 		TriggeredRule triggeredRuleResponse = responseDetail.getRules().get(0);
-		Assert.assertEquals(triggeredRule.getFilteredAttributeName(),
-				triggeredRuleResponse.getFilteredAttributeName());
-		Assert.assertEquals(triggeredRule.getFilteredValue(),
-				triggeredRuleResponse.getFilteredValue());
+		Assert.assertEquals(triggeredRule.getTransactionFieldName(),
+				triggeredRuleResponse.getTransactionFieldName());
+		Assert.assertEquals(triggeredRule.getTransactionFieldValue(),
+				triggeredRuleResponse.getTransactionFieldValue());
 		Assert.assertEquals(triggeredRule.getOperator(), triggeredRuleResponse.getOperator());
 		Assert.assertEquals(triggeredRule.getRuleConfiguredValue(),
 				triggeredRuleResponse.getRuleConfiguredValue());
@@ -121,38 +115,38 @@ public class ResponseConverterTest {
 	@Test
 	public void getFraudvaultPosvalidationTest() {
 
-		FraudvaultPosvalidationResponse response = getPosvalidationResponse();
-		FraudvaultPosvalidation fvPosvalidation = ResponseConverter.getFraudvaultPosvalidation(response);
-		Assert.assertEquals(fvPosvalidation.getGeneralAnswerCode(),response.getGeneralAnswerCode());
-		Assert.assertEquals(fvPosvalidation.getGeneralErrorCode(), response.getGeneralErrorCode());
+		PosvalidationResponsesSoapWrapper response = getPosvalidationResponse();
+		FraudvaultPosvalidationResponse fvPosvalidation = ResponseConverter.getFraudvaultPosvalidation(response);
+		Assert.assertEquals(fvPosvalidation.getGeneralAnswerCode(), GeneralAnswerCode.getById(response.getGeneralAnswerCode()));
+		Assert.assertEquals(fvPosvalidation.getGeneralErrorCode(), null);
 		Assert.assertEquals(fvPosvalidation.getGeneralErrorMessage(),response.getGeneralErrorMessage());
 		Assert.assertEquals(fvPosvalidation.getResponseDate(), response.getResponseDate());
 
-		FraudvaultEvaluation evaluation = response.getEvaluation();
+		EvaluationSoapWrapper evaluation = response.getEvaluation();
 		Assert.assertNotNull(evaluation);
-		Assert.assertEquals(fvPosvalidation.getDecision(), evaluation.getDecision());
+		Assert.assertEquals(fvPosvalidation.getDecision(), PosvalidationDecision.getById(evaluation.getDecision()));
 
-		FraudvaultEvaluationDetail responseDetail = evaluation.getDetail();
+		EvaluationDetailSoapWrapper responseDetail = evaluation.getDetail();
 		Assert.assertNotNull(responseDetail);
 		Assert.assertEquals(fvPosvalidation.getTransactionId(), responseDetail.getTransactionId());
 		Assert.assertEquals(fvPosvalidation.getEvaluationTime(),
 				responseDetail.getEvaluationTime());
-		Assert.assertEquals(fvPosvalidation.getErrorCode(), responseDetail.getErrorCode());
+		Assert.assertEquals(fvPosvalidation.getErrorCode(), ErrorCode.getById(responseDetail.getErrorCode()));
 		Assert.assertEquals(fvPosvalidation.getErrorMessage(), responseDetail.getErrorMessage());
 		Assert.assertEquals(fvPosvalidation.getSimilarTransactionsNumber(),
 				responseDetail.getSimilarTransactionsNumber());
 
-		List<String> actions = fvPosvalidation.getActions();
+		List<Action> actions = fvPosvalidation.getActions();
 		Assert.assertNotNull(actions);
-		Assert.assertEquals(actions.get(0), responseDetail.getActions().get(0));
+		Assert.assertEquals(actions.get(0), Action.getByKey(responseDetail.getActions().get(0)));
 
 		Assert.assertNotNull(fvPosvalidation.getTriggeredRules());
 		TriggeredRule triggeredRule = fvPosvalidation.getTriggeredRules().get(0);
 		TriggeredRule triggeredRuleResponse = responseDetail.getRules().get(0);
-		Assert.assertEquals(triggeredRule.getFilteredAttributeName(),
-				triggeredRuleResponse.getFilteredAttributeName());
-		Assert.assertEquals(triggeredRule.getFilteredValue(),
-				triggeredRuleResponse.getFilteredValue());
+		Assert.assertEquals(triggeredRule.getTransactionFieldName(),
+				triggeredRuleResponse.getTransactionFieldName());
+		Assert.assertEquals(triggeredRule.getTransactionFieldValue(),
+				triggeredRuleResponse.getTransactionFieldValue());
 		Assert.assertEquals(triggeredRule.getOperator(), triggeredRuleResponse.getOperator());
 		Assert.assertEquals(triggeredRule.getRuleConfiguredValue(),
 				triggeredRuleResponse.getRuleConfiguredValue());
@@ -166,11 +160,11 @@ public class ResponseConverterTest {
 	@Test
 	public void getFraudvaultQueryStateTest() {
 
-		FraudvaultQueryStateResponse response = new FraudvaultQueryStateResponse();
+		QueryStateResponseSoapWrapper response = new QueryStateResponseSoapWrapper();
 		response.setGeneralAnswerCode(2);
 		response.setGeneralErrorCode(1001);
 		response.setGeneralErrorMessage("msg-error");
-		FraudvaultStateOperationResponseContent queryStateResponseContent = new FraudvaultStateOperationResponseContent();
+		StateOperationResponseContentSoapWrapper queryStateResponseContent = new StateOperationResponseContentSoapWrapper();
 		queryStateResponseContent.setAnswerCode(2);
 		queryStateResponseContent.setErrorMessage("error-msg");
 		queryStateResponseContent.setState(8);
@@ -178,9 +172,10 @@ public class ResponseConverterTest {
 		response.setQueryStateResponseContent(queryStateResponseContent);
 		response.setResponseDate(new Date());
 
-		FraudvaultStateQuery fvQueryState = ResponseConverter.getFraudvaultStateQuery(response);
-		Assert.assertEquals(fvQueryState.getGeneralAnswerCode(), response.getGeneralAnswerCode());
-		Assert.assertEquals(fvQueryState.getGeneralErrorCode(), response.getGeneralErrorCode());
+		FraudvaultStateQueryResponse fvQueryState = ResponseConverter.getFraudvaultStateQuery(response);
+		Assert.assertTrue(fvQueryState.hasError());
+		Assert.assertEquals(fvQueryState.getGeneralAnswerCode(), GeneralAnswerCode.getById(response.getGeneralAnswerCode()));
+		Assert.assertEquals(fvQueryState.getGeneralErrorCode(), GeneralErrorCode.getById(response.getGeneralErrorCode()));
 		Assert.assertEquals(fvQueryState.getGeneralErrorMessage(),
 				response.getGeneralErrorMessage());
 		Assert.assertEquals(fvQueryState.getResponseDate(), response.getResponseDate());
@@ -188,9 +183,8 @@ public class ResponseConverterTest {
 				queryStateResponseContent.getTransactionId());
 		Assert.assertEquals(fvQueryState.getErrorMessage(),
 				queryStateResponseContent.getErrorMessage());
-		Assert.assertEquals(fvQueryState.getState(), queryStateResponseContent.getState());
-		Assert.assertEquals(fvQueryState.getAnswerCode(),
-				queryStateResponseContent.getAnswerCode());
+		Assert.assertEquals(fvQueryState.getState(), TransactionState.getById(queryStateResponseContent.getState()));
+		Assert.assertEquals(fvQueryState.getAnswerCode(),GeneralAnswerCode.getById(queryStateResponseContent.getAnswerCode()));
 	}
 
 	/**
@@ -200,21 +194,22 @@ public class ResponseConverterTest {
 	@Test
 	public void getFraudvaultUpdateStateTest() {
 
-		FraudvaultUpdateStateResponse response = new FraudvaultUpdateStateResponse();
+		UpdateStateResponseSoapWrapper response = new UpdateStateResponseSoapWrapper();
 		response.setGeneralAnswerCode(2);
 		response.setGeneralErrorCode(1001);
 		response.setGeneralErrorMessage("msg-error");
 		response.setResponseDate(new Date());
-		FraudvaultStateOperationResponseContent updateStateResponseContent = new FraudvaultStateOperationResponseContent();
+		StateOperationResponseContentSoapWrapper updateStateResponseContent = new StateOperationResponseContentSoapWrapper();
 		updateStateResponseContent.setAnswerCode(2);
 		updateStateResponseContent.setErrorMessage("error-msg");
 		updateStateResponseContent.setState(8);
 		updateStateResponseContent.setTransactionId("trx-test-update");
 		response.setUpdateStateResponseContent(updateStateResponseContent);
 
-		FraudvaultStateUpdate fvUpdateState = ResponseConverter.getFraudvaultStateUpdate(response);
-		Assert.assertEquals(fvUpdateState.getGeneralAnswerCode(), response.getGeneralAnswerCode());
-		Assert.assertEquals(fvUpdateState.getGeneralErrorCode(), response.getGeneralErrorCode());
+		FraudvaultStateUpdateResponse fvUpdateState = ResponseConverter.getFraudvaultStateUpdate(response);
+		Assert.assertTrue(fvUpdateState.hasError());
+		Assert.assertEquals(fvUpdateState.getGeneralAnswerCode(), GeneralAnswerCode.getById(response.getGeneralAnswerCode()));
+		Assert.assertEquals(fvUpdateState.getGeneralErrorCode(), GeneralErrorCode.getById(response.getGeneralErrorCode()));
 		Assert.assertEquals(fvUpdateState.getGeneralErrorMessage(),
 				response.getGeneralErrorMessage());
 		Assert.assertEquals(fvUpdateState.getResponseDate(), response.getResponseDate());
@@ -222,21 +217,20 @@ public class ResponseConverterTest {
 				updateStateResponseContent.getTransactionId());
 		Assert.assertEquals(fvUpdateState.getErrorMessage(),
 				updateStateResponseContent.getErrorMessage());
-		Assert.assertEquals(fvUpdateState.getAnswerCode(),
-				updateStateResponseContent.getAnswerCode());
+		Assert.assertEquals(fvUpdateState.getAnswerCode(), GeneralAnswerCode.getById(updateStateResponseContent.getAnswerCode()));
 	}
 
 	/**
-	 * Gets a <code>FraudvaultPosvalidationResponse</code> with data for testing.
-	 * @return the <code>FraudvaultPosvalidationResponse</code> with data for testing.
+	 * Gets a <code>PosvalidationResponsesSoapWrapper</code> with data for testing.
+	 * @return the <code>PosvalidationResponsesSoapWrapper</code> with data for testing.
 	 */
-	private FraudvaultPosvalidationResponse getPosvalidationResponse() {
+	private PosvalidationResponsesSoapWrapper getPosvalidationResponse() {
 
-		FraudvaultPosvalidationResponse response = new FraudvaultPosvalidationResponse();
+		PosvalidationResponsesSoapWrapper response = new PosvalidationResponsesSoapWrapper();
 		response.setGeneralAnswerCode(1);
-		FraudvaultEvaluation evaluation = new FraudvaultEvaluation();
+		EvaluationSoapWrapper evaluation = new EvaluationSoapWrapper();
 		evaluation.setDecision(5);
-		FraudvaultEvaluationDetail detail = new FraudvaultEvaluationDetail();
+		EvaluationDetailSoapWrapper detail = new EvaluationDetailSoapWrapper();
 		detail.setTransactionId("trx-test-pos");
 		List<String> actions = new ArrayList<>();
 		actions.add("REVERSAR");
@@ -247,8 +241,8 @@ public class ResponseConverterTest {
 
 		List<TriggeredRule> rules = new ArrayList<>();
 		TriggeredRule rule = new TriggeredRule();
-		rule.setFilteredAttributeName("documento_comprador");
-		rule.setFilteredValue("20444444");
+		rule.setTransactionFieldName("documento_comprador");
+		rule.setTransactionFieldValue("20444444");
 		rule.setRuleName("rule_test_post");
 		rule.setRuleConfiguredValue("20444444");
 		rule.setOperator("IGUAL");
@@ -265,16 +259,16 @@ public class ResponseConverterTest {
 	}
 
 	/**
-	 * Gets a <code>FraudvaultPrevalidationResponse</code> with data for testing.
-	 * @return the <code>FraudvaultPrevalidationResponse</code> with data for testing.
+	 * Gets a <code>PrevalidationResponseSoapWrapper</code> with data for testing.
+	 * @return the <code>PrevalidationResponseSoapWrapper</code> with data for testing.
 	 */
-	private FraudvaultPrevalidationResponse getPrevalidationresponse() {
+	private PrevalidationResponseSoapWrapper getPrevalidationresponse() {
 
-		FraudvaultPrevalidationResponse response = new FraudvaultPrevalidationResponse();
+		PrevalidationResponseSoapWrapper response = new PrevalidationResponseSoapWrapper();
 		response.setGeneralAnswerCode(1);
-		FraudvaultEvaluation evaluation = new FraudvaultEvaluation();
+		EvaluationSoapWrapper evaluation = new EvaluationSoapWrapper();
 		evaluation.setDecision(2);
-		FraudvaultEvaluationDetail detail = new FraudvaultEvaluationDetail();
+		EvaluationDetailSoapWrapper detail = new EvaluationDetailSoapWrapper();
 		List<String> actions = new ArrayList<>();
 		actions.add("RECHAZAR");
 		detail.setActions(actions);
@@ -284,7 +278,7 @@ public class ResponseConverterTest {
 		ControlListsInformation controlListsInformation = new ControlListsInformation();
 		ListMatch blackListsMatching = new ListMatch();
 		blackListsMatching.setMatch(true);
-		blackListsMatching.setParameter("correo_electronico");
+		blackListsMatching.setTransactionFieldName("correo_electronico");
 		controlListsInformation.setBlackListsMatching(blackListsMatching);
 		detail.setControlListsInformation(controlListsInformation);
 		detail.setErrorCode(null);
@@ -307,8 +301,8 @@ public class ResponseConverterTest {
 		detail.setIssuerBank(issuerBank);
 		List<TriggeredRule> rules = new ArrayList<>();
 		TriggeredRule rule = new TriggeredRule();
-		rule.setFilteredAttributeName("telefono_oficina");
-		rule.setFilteredValue("4111111");
+		rule.setTransactionFieldName("telefono_oficina");
+		rule.setTransactionFieldValue("4111111");
 		rule.setRuleName("rule_test");
 		rule.setRuleConfiguredValue("4111111");
 		rule.setOperator("IGUAL");
@@ -316,7 +310,7 @@ public class ResponseConverterTest {
 		detail.setRules(rules);
 		detail.setSimilarTransactionsNumber(7);
 		detail.setTransactionId("trx-id-test");
-		detail.setValidateWithCreditBureau(true);
+		detail.setValidatedWithCreditBureau(true);
 		evaluation.setDetail(detail);
 		response.setEvaluation(evaluation);
 		response.setGeneralErrorCode(null);

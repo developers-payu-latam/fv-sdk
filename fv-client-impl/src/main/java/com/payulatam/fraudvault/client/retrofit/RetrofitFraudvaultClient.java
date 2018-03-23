@@ -7,9 +7,10 @@ package com.payulatam.fraudvault.client.retrofit;
 
 import java.util.concurrent.TimeUnit;
 
-import org.apache.log4j.Logger;
 import org.simpleframework.xml.convert.AnnotationStrategy;
 import org.simpleframework.xml.core.Persister;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.payulatam.fraudvault.api.client.FraudvaultClient;
 import com.payulatam.fraudvault.api.client.FraudvaultClientConfiguration;
@@ -20,14 +21,14 @@ import com.payulatam.fraudvault.client.retrofit.converter.SoapEnvelopeConverter;
 import com.payulatam.fraudvault.client.retrofit.model.soap.request.*;
 import com.payulatam.fraudvault.client.retrofit.model.soap.response.*;
 import com.payulatam.fraudvault.model.request.Transaction;
-import com.payulatam.fraudvault.model.response.FraudvaultPosvalidation;
-import com.payulatam.fraudvault.model.response.FraudvaultPrevalidation;
-import com.payulatam.fraudvault.model.response.FraudvaultStateQuery;
-import com.payulatam.fraudvault.model.response.FraudvaultStateUpdate;
-import com.payulatam.fraudvault.model.response.xml.FraudvaultPosvalidationResponse;
-import com.payulatam.fraudvault.model.response.xml.FraudvaultPrevalidationResponse;
-import com.payulatam.fraudvault.model.response.xml.FraudvaultQueryStateResponse;
-import com.payulatam.fraudvault.model.response.xml.FraudvaultUpdateStateResponse;
+import com.payulatam.fraudvault.model.response.FraudvaultPosvalidationResponse;
+import com.payulatam.fraudvault.model.response.FraudvaultPrevalidationResponse;
+import com.payulatam.fraudvault.model.response.FraudvaultStateQueryResponse;
+import com.payulatam.fraudvault.model.response.FraudvaultStateUpdateResponse;
+import com.payulatam.fraudvault.model.response.soap.PosvalidationResponsesSoapWrapper;
+import com.payulatam.fraudvault.model.response.soap.PrevalidationResponseSoapWrapper;
+import com.payulatam.fraudvault.model.response.soap.QueryStateResponseSoapWrapper;
+import com.payulatam.fraudvault.model.response.soap.UpdateStateResponseSoapWrapper;
 
 import okhttp3.OkHttpClient;
 import retrofit2.Call;
@@ -43,7 +44,7 @@ import retrofit2.converter.simplexml.SimpleXmlConverterFactory;
 public class RetrofitFraudvaultClient extends FraudvaultClient {
 	
 	/** Class logger. */
-	private final Logger logger = Logger.getLogger(getClass());
+	private static final Logger logger = LoggerFactory.getLogger(RetrofitFraudvaultClient.class);
 
 	/** Fraudvault service API end point implementation. */
 	private IFraudvaultService fraudvaultService;
@@ -60,11 +61,11 @@ public class RetrofitFraudvaultClient extends FraudvaultClient {
 	private IFraudvaultService createService() {
 
 		OkHttpClient httpClient = new OkHttpClient.Builder()
-				.readTimeout(getClientConfiguration().getReadTimeout(), TimeUnit.MILLISECONDS)
-				.connectTimeout(getClientConfiguration().getConnectionTimeout(), TimeUnit.MILLISECONDS)
+				.readTimeout(getClientConfiguration().getReadTimeoutInMillis(), TimeUnit.MILLISECONDS)
+				.connectTimeout(getClientConfiguration().getConnectionTimeoutInMillis(), TimeUnit.MILLISECONDS)
 				.build();
 		Retrofit retrofit = new Retrofit.Builder()
-				.baseUrl(verifyBaseUrl())
+				.baseUrl(adaptBaseUrl())
 				.client(httpClient)
 				.addConverterFactory(SimpleXmlConverterFactory.createNonStrict(new Persister(new AnnotationStrategy())))
 				.build();
@@ -72,9 +73,9 @@ public class RetrofitFraudvaultClient extends FraudvaultClient {
 		return retrofit.create(IFraudvaultService.class);
 	}
 	
-	/** Verify the API base URL for retrofit and ensure it ends with / because the Base URLs should always end in / 
+	/** Adapt the API base URL for retrofit ensuring it ends with / because the Base URLs should always end in / 
 	 * thus the endpoints values which are relative paths will correctly append themselves to the base. */
-	private String verifyBaseUrl(){
+	private String adaptBaseUrl(){
 		
 		String baseUrl = getClientConfiguration().getFraudvaultServiceBaseUrl();
 		if(!baseUrl.endsWith("/")){
@@ -87,7 +88,7 @@ public class RetrofitFraudvaultClient extends FraudvaultClient {
 	 * @see com.payulatam.fraudvault.api.client.FraudvaultClient#prevalidate(com.payulatam.fraudvault.model.request.Transaction)
 	 */
 	@Override
-	public FraudvaultPrevalidation prevalidate(Transaction transaction) throws FraudvaultException {
+	public FraudvaultPrevalidationResponse prevalidate(Transaction transaction) throws FraudvaultException {
 
 		if (transaction == null) {
 			throw new IllegalArgumentException("The transaction object to prevalidate can not be null");
@@ -101,7 +102,7 @@ public class RetrofitFraudvaultClient extends FraudvaultClient {
 				PrevalidationResponseSoapEnvelope reponseBody = response.body();
 				if(reponseBody != null) {
 					if (reponseBody.getPrevalidationResponseBodyData() != null) {
-						FraudvaultPrevalidationResponse prevalidationResponse = FraudvaultPrevalidationResponse
+						PrevalidationResponseSoapWrapper prevalidationResponse = PrevalidationResponseSoapWrapper
 								.fromXml(reponseBody.getPrevalidationResponseBodyData().getResponseContent());
 						return ResponseConverter.getFraudvaultPrevalidation(prevalidationResponse);
 					} else {
@@ -127,7 +128,7 @@ public class RetrofitFraudvaultClient extends FraudvaultClient {
 	 * @see com.payulatam.fraudvault.api.client.FraudvaultClient#evaluate(com.payulatam.fraudvault.model.request.Transaction)
 	 */
 	@Override
-	public FraudvaultPrevalidation evaluate(Transaction transaction) throws FraudvaultException {
+	public FraudvaultPrevalidationResponse evaluate(Transaction transaction) throws FraudvaultException {
 
 		if (transaction == null) {
 			throw new IllegalArgumentException("The transaction object to evaluate can not be null");
@@ -141,7 +142,7 @@ public class RetrofitFraudvaultClient extends FraudvaultClient {
 				EvaluationResponseSoapEnvelope reponseBody = response.body();
 				if(reponseBody != null) {
 					if (reponseBody.getPrevalidationResponseBodyData() != null) {
-						FraudvaultPrevalidationResponse evaluationResponse = FraudvaultPrevalidationResponse
+						PrevalidationResponseSoapWrapper evaluationResponse = PrevalidationResponseSoapWrapper
 								.fromXml(reponseBody.getPrevalidationResponseBodyData().getResponseContent());
 						return ResponseConverter.getFraudvaultPrevalidation(evaluationResponse);
 					} else {
@@ -167,7 +168,7 @@ public class RetrofitFraudvaultClient extends FraudvaultClient {
 	 */
 
 	@Override
-	public FraudvaultPosvalidation posvalidate(String transactionId) throws FraudvaultException {
+	public FraudvaultPosvalidationResponse posvalidate(String transactionId) throws FraudvaultException {
 
 		if (transactionId == null) {
 			throw new IllegalArgumentException("The transaction ID to posvalidate can not be null");
@@ -181,7 +182,7 @@ public class RetrofitFraudvaultClient extends FraudvaultClient {
 				PosvalidationResponseSoapEnvelope responseBody = response.body();
 				if (responseBody != null) {
 					if (responseBody.getPostvalidationResponseBodyData() != null) {
-						FraudvaultPosvalidationResponse posvalidationResponse = FraudvaultPosvalidationResponse
+						PosvalidationResponsesSoapWrapper posvalidationResponse = PosvalidationResponsesSoapWrapper
 								.fromXml(responseBody.getPostvalidationResponseBodyData().getResponseContent());
 						return ResponseConverter.getFraudvaultPosvalidation(posvalidationResponse);
 					} else {
@@ -203,7 +204,7 @@ public class RetrofitFraudvaultClient extends FraudvaultClient {
 	 * @see com.payulatam.fraudvault.api.client.FraudvaultClient#queryTransactionState(java.lang.String)
 	 */
 	@Override
-	public FraudvaultStateQuery queryTransactionState(String transactionId) throws FraudvaultException {
+	public FraudvaultStateQueryResponse queryTransactionState(String transactionId) throws FraudvaultException {
 
 		if (transactionId == null) {
 			throw new IllegalArgumentException("The transaction ID to query can not be null");
@@ -217,7 +218,7 @@ public class RetrofitFraudvaultClient extends FraudvaultClient {
 				QueryStateResponseSoapEnvelope responseBody = response.body();
 				if(responseBody != null){
 					if(responseBody.getQueryStateResponseBodyData() != null){
-						FraudvaultQueryStateResponse queryStateResponse = FraudvaultQueryStateResponse
+						QueryStateResponseSoapWrapper queryStateResponse = QueryStateResponseSoapWrapper
 								.fromXml(responseBody.getQueryStateResponseBodyData().getResponseContent());
 						return ResponseConverter.getFraudvaultStateQuery(queryStateResponse);
 					} else {
@@ -239,7 +240,7 @@ public class RetrofitFraudvaultClient extends FraudvaultClient {
 	 * @see com.payulatam.fraudvault.api.client.FraudvaultClient#updateTransactionState(java.lang.String, java.lang.Long)
 	 */
 	@Override
-	public FraudvaultStateUpdate updateTransactionState(String transactionId, Long stateId) throws FraudvaultException{
+	public FraudvaultStateUpdateResponse updateTransactionState(String transactionId, Long stateId) throws FraudvaultException{
 
 		if (transactionId == null || stateId == null) {
 			throw new IllegalArgumentException("The transaction ID and the state ID can not be null");
@@ -253,7 +254,7 @@ public class RetrofitFraudvaultClient extends FraudvaultClient {
 				UpdateStateResponseSoapEnvelope responseBody = response.body();
 				if(responseBody != null){
 					if(responseBody.getUpdateStateResponseBodyData() != null) {
-						FraudvaultUpdateStateResponse updateStateResponse = FraudvaultUpdateStateResponse.
+						UpdateStateResponseSoapWrapper updateStateResponse = UpdateStateResponseSoapWrapper.
 								fromXml(responseBody.getUpdateStateResponseBodyData().getResponseContent());
 						return ResponseConverter.getFraudvaultStateUpdate(updateStateResponse);
 					} else {

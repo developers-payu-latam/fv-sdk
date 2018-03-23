@@ -53,6 +53,6 @@ public class Pnr {
 	 * MC = Multicity
 	 */
 	@Element(name = "tipo-viaje", required = false)
-	private String tripType;
+	private TripType tripType;
 
 }

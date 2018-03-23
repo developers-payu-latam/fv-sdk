@@ -3,13 +3,12 @@
  * http://www.payu.com.co
  * Date: 9 de nov. de 2017
  */
-package com.payulatam.fraudvault.model.response.xml;
+package com.payulatam.fraudvault.model.response.soap;
 
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.convert.AnnotationStrategy;
 import org.simpleframework.xml.core.Persister;
-import org.simpleframework.xml.strategy.Strategy;
 
 import com.payulatam.fraudvault.api.client.exception.XmlConversionException;
 
@@ -24,27 +23,27 @@ import lombok.EqualsAndHashCode;
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class FraudvaultQueryStateResponse extends FraudvaultBaseResponse {
+public class QueryStateResponseSoapWrapper extends FraudvaultBaseResponseSoapWrapper {
 
 	@Element(name = "respuesta-maf-consulta-estado", required = false)
-	private FraudvaultStateOperationResponseContent queryStateResponseContent;
+	private StateOperationResponseContentSoapWrapper queryStateResponseContent;
+	
+	private static Serializer serializer = new Persister(new AnnotationStrategy());
 	
 	/**
-	 * Read the content of the XML document and convert it into a {@code FraudvaultQueryStateResponse} object.
+	 * Read the content of the XML document and convert it into a {@code QueryStateResponseSoapWrapper} object.
 	 * 
 	 * @param xml the XML to be deserialized.
 	 * @return the object deserialized from the XML .
 	 * @throws XmlConversionException if the object cannot be deserialized.
 	 */
-	public static FraudvaultQueryStateResponse fromXml(String xml) throws XmlConversionException {
+	public static QueryStateResponseSoapWrapper fromXml(String xml) throws XmlConversionException {
 
 		try {
-			Strategy strategy = new AnnotationStrategy();
-			Serializer serializer = new Persister(strategy);
-			return serializer.read(FraudvaultQueryStateResponse.class, xml);
+			return serializer.read(QueryStateResponseSoapWrapper.class, xml);
 		} catch (Exception e) {
 			throw new XmlConversionException(
-					"Exception deserializing the XML string to FraudvaultQueryStateResponse object",e);
+					"Exception deserializing the XML string to QueryStateResponseSoapWrapper object",e);
 		}
 	}
 

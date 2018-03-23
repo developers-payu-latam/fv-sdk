@@ -1,5 +1,6 @@
 package com.payulatam.fraudvault.model.request;
 
+import org.apache.commons.lang3.StringUtils;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;
 
@@ -16,15 +17,17 @@ import lombok.Data;
 @Builder
 public class PaymentInformation {
 
-	/** Identifier of the payment method type. For example: 1 corresponds to Credit card, 
-	 * 2 corresponds to Debit card. */
+	/** The payment method type. */
+	private PaymentMethodType paymentMethodType;
+	
+	/** Identifier of the specific payment method type. **/
 	@Element(name = "tipo-medio-pago", required = false)
-	private Integer paymentMethodType;
+	private Integer paymentMethodTypeId;
 
 	/** Identifier of the specific payment method. It may vary depend on the country. */
 	@Element(name = "medio-pago", required = false)
 	private Integer paymentMethod;
-	
+
 	/** Number of the debit/credit card used by the buyer. */
 	@Element(name = "pan", required = false)
 	private String pan;
@@ -48,7 +51,7 @@ public class PaymentInformation {
 	@Element(name = "banco", required = false)
 	private String issuerBank;
 
-	/** ISO code 4217 of the currency used in the transaction. For example: USD for US dollar.*/
+	/** ISO code 4217 of the currency used in the transaction. For example: USD for US dollar. */
 	@Element(name = "moneda", required = false)
 	private String currencyIso;
 
@@ -70,5 +73,69 @@ public class PaymentInformation {
 	/** The account/card holder data. */
 	@Element(name = "titular", required = false)
 	private AccountHolder holder;
+
+	public static class PaymentInformationBuilder {
+		
+		public PaymentInformationBuilder paymentMethodType(PaymentMethodType paymentMethodType){
+			this.paymentMethodType = paymentMethodType;
+			paymentMethodTypeId(paymentMethodType.getId());
+			return this;
+		}
+		
+		private PaymentInformationBuilder paymentMethodTypeId(int paymentMethodTypeId){
+			this.paymentMethodTypeId = paymentMethodTypeId;
+			return this;
+		}
+
+		/**
+		 * Expiration date of the card used in the transaction.
+		 * 
+		 * @param cardExpirationMonth month of the card expiration date with MM format. For Example:
+		 *            02 for February and 11 for November
+		 * @param cardExpirationYear year of the card expiration date with YY format. For Example:
+		 *            23 for 2023
+		 * @return the PaymentInformationBuilder
+		 */
+		public PaymentInformationBuilder expirationDate(String cardExpirationMonth, String cardExpirationYear) {
+			if (StringUtils.isNotEmpty(cardExpirationMonth) && StringUtils.isNotEmpty(cardExpirationYear)) {
+				if (validateInputsExpirationDate(cardExpirationMonth, cardExpirationYear)) {
+					int yearNumber = Integer.parseInt(cardExpirationYear);
+					if (yearNumber > 2000) {
+						yearNumber = yearNumber - 2000;
+					}
+					String y =  (yearNumber > 9) ? String.valueOf(yearNumber): "0" + yearNumber;
+					this.expirationDate = cardExpirationMonth + "-" + y;					
+				}
+				else {
+					throw new IllegalArgumentException("Invalid values for the card expiration month"
+									+ " or " + "card expiration year");
+				}
+			}
+			return this;
+		}
+
+		/**
+		 * Validates if the card expiration month and year are valid.
+		 * 
+		 * @param cardExpirationMonth month of the card expiration date.
+		 * @param cardExpirationYear year of the card expiration date
+		 * @return if the inputs are valid.
+		 */
+		private static boolean validateInputsExpirationDate(String cardExpirationMonth,
+				String cardExpirationYear) {
+			boolean validInputs = true;
+			try {
+				int month = Integer.parseInt(cardExpirationMonth);
+				int year = Integer.parseInt(cardExpirationYear);
+				if (month < 0 || month > 12 || year < 0) {
+					validInputs = false;
+				}
+			} catch (NumberFormatException e) {
+				validInputs = false;
+			}
+			return validInputs;
+		}
+
+	}
 
 }

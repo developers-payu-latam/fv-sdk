@@ -5,8 +5,6 @@
  */
 package com.payulatam.fraudvault.model.response;
 
-import com.payulatam.fraudvault.model.response.xml.FraudvaultBaseResponse;
-
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -19,18 +17,25 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @Builder
-public class FraudvaultStateUpdate extends FraudvaultBaseResponse{
+public class FraudvaultStateUpdateResponse extends FraudvaultBaseResponse{
 	
 	/** The identifier of the transaction. */
 	private String transactionId;
 
-	/**
-	 * A value of 1: it represents a successful response code; in case there were no errors,
-	 * otherwise 2: it represents an error response code; in case there were errors.
-	 */
-	private Integer answerCode;
+	/** The answer code. */
+	private GeneralAnswerCode answerCode;
 
 	/**  Message associated with the error, if an error occurs */
 	private String errorMessage;
+	
+	/**
+	 * Indicates if there was an error in the update query process.
+	 * 
+	 * @return true if there was an error otherwise false.
+	 */
+	@Override
+	public boolean hasError() {
+		return super.hasError() || (answerCode != null && answerCode == GeneralAnswerCode.FAIL);
+	}
 
 }
