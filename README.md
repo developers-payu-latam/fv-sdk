@@ -1,6 +1,6 @@
 # Fraudvault SDK #
 
-With this SDK you will be able to integrate the Fraudvault services in a quick and easy way. To add the SDK dependency:
+With this SDK you will be able to integrate the Fraudvault services in a quick and easy way. To add the SDK dependency in your project:
 
 **Maven:**
 
@@ -15,14 +15,14 @@ With this SDK you will be able to integrate the Fraudvault services in a quick a
 **Gradle:**
 
 ````
-compile group: 'com.payulatam.fraudvault', name: 'fv-client-impl', version: '1.0.0'
+	compile group: 'com.payulatam.fraudvault', name: 'fv-client-impl', version: '1.0.0'
 ````
 
 ##¿What data do you need for access our Fraudvault services?
 
 You will need some aunthentication credentials for access our services, to obtain them contact us. You will need:
-+ Your unique client identifier
-+ Your user login and password to authentication
+* Your unique client identifier
+* Your user login and password to authentication
 
 ##¿How you can get an instance of the Fraudvault client?
 
@@ -30,24 +30,23 @@ Getting an instance of our service client is easy, only do this:
 
 With your aunthentication credentials, create the Credentials object:
 ```java
-Credentials credentials = new Credentials(yourClientId, yourLogin, yourPassword);
+	Credentials credentials = new Credentials(yourClientId, yourLogin, yourPassword);
 ```
 
 With your Credentials and the base URL of our Fraudvault service, create the configuration of the FraudvaultClient:
 ```java
-FraudvaultClientConfiguration fraudvaultClientConfiguration = FraudvaultClientConfiguration.builder()
-				.credentials(credentials)
-				.fraudvaultServiceBaseUrl(webServiceBaseUrl)
-				.build();
+	FraudvaultClientConfiguration fraudvaultClientConfiguration = FraudvaultClientConfiguration.builder()
+					.credentials(credentials)
+					.fraudvaultServiceBaseUrl(webServiceBaseUrl)
+					.build();
 ```
 The base URL of our Fraudvault services, depends on the environment you're connecting to. For our sandbox environment, use: https://pruebas.maf.pagosonline.net/ws
 
 So, for getting the Fraudvault client just do:
 ```java
-FraudvaultClient fraudvaultClient = FraudvaultClientFactory.createDefaultFraudvaultClient(fraudvaultClientConfiguration);
+	FraudvaultClient fraudvaultClient = FraudvaultClientFactory.createDefaultFraudvaultClient(fraudvaultClientConfiguration);
 ```
 ##¿How do you invoke the Fraudvault services?
-With the instance of the client you will be able to use the different Fraudvault services. For example to call the prevalidation service:
 
 First, create the object with the data of the transaction(the order) that you want to prevalidate, a simple example could be:
 ```java
@@ -74,9 +73,9 @@ Buyer.builder()
 		.email("the buyer email")
 		.build();
 ```		
-With the transaction, now you can call the Fraudvault service:
+With the transaction and the instance of the client you will be able to use the different Fraudvault services. For example to call the prevalidation service: 
 ```java
-FraudvaultPrevalidationResponse prevalidationResponse = fraudvaultClient.prevalidate(transaction);
+	FraudvaultPrevalidationResponse prevalidationResponse = fraudvaultClient.prevalidate(transaction);
 ```
 And you will be able to get the information of your interest from the service reponse. For example, to get the decision made by Fraudvault:
 ```java
