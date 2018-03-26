@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<respuesta>
+  <fecha>2017-12-01T16:46:37</fecha>
+  <codigo-respuesta>1</codigo-respuesta>
+  <codigo-error/>
+  <mensaje-error/>
+  <respuesta-maf-postvalidacion>
+    <evaluacion>
+      <transaccion-id>9194802</transaccion-id>
+      <acciones/>
+      <transacciones-similares>114</transacciones-similares>
+      <filtros/>
+      <tiempo-evaluacion>2854</tiempo-evaluacion>
+      <codigo-error/>
+      <mensaje-error/>
+    </evaluacion>
+    <decision>6</decision>
+  </respuesta-maf-postvalidacion>
+</respuesta>

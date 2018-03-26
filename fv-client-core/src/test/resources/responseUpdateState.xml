@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<respuesta>
+  <fecha>2017-12-01T17:14:08</fecha>
+  <codigo-respuesta>1</codigo-respuesta>
+  <codigo-error/>
+  <mensaje-error/>
+  <respuesta-maf-actualiza-estado>
+    <transaccion-id>456602622</transaccion-id>
+    <codigo-respuesta>1</codigo-respuesta>
+  </respuesta-maf-actualiza-estado>
+</respuesta>
