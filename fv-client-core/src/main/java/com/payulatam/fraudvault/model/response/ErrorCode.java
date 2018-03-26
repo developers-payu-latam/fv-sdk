@@ -57,9 +57,12 @@ public enum ErrorCode {
 	 */
 	public static ErrorCode getById(Integer id) {
 
-		ErrorCode error = errorCodeMap.get(id);
-		if (error == null) {
-			return UNKNOWN;
+		ErrorCode error = null;
+		if (id != null) {
+			error = errorCodeMap.get(id);
+			if (error == null) {
+				error = UNKNOWN;
+			}
 		}
 		return error;
 	}

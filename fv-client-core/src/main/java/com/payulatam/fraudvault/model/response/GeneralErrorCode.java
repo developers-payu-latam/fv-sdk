@@ -25,7 +25,7 @@ public enum GeneralErrorCode {
 	QUERY_STATE_ERROR(1007),
 	UPDATE_STATE_ERROR(1008),
 	INVALID_STATE_ERROR(1010),
-	SERVICE_NOT_AVAILABLE_ERROR(1016),
+	UNAVAILABLE_SERVICE_ERROR(1016),
 	CALLING_EVALUATION_SERVICE_ERROR(1029),
 	FRAUDVAULT_GENERAL_ERROR(1020),
 	UNKNOWN(-1);
@@ -63,9 +63,12 @@ public enum GeneralErrorCode {
 	 */
 	public static GeneralErrorCode getById(Integer id) {
 
-		GeneralErrorCode error = generalErrorCodesMap.get(id);
-		if (error == null) {
-			return UNKNOWN;
+		GeneralErrorCode error = null;
+		if (id != null) {
+			error = generalErrorCodesMap.get(id);
+			if (error == null) {
+				error = UNKNOWN;
+			}
 		}
 		return error;
 	}

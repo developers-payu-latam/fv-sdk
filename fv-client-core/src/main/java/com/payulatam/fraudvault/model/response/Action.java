@@ -8,8 +8,6 @@ package com.payulatam.fraudvault.model.response;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
-
 /**
  * They are the actions triggered in the execution of rules. The actions triggered are according
  * to transaction data that match with the rules profiles configuration in Fraudvault.
@@ -62,7 +60,7 @@ public enum Action {
 	public static Action getByKey(String key) {
 
 		Action action = null;
-		if (StringUtils.isNotBlank(key)) {
+		if (key != null && !key.isEmpty()) {
 			action = actionsMap.get(key);
 			if (action == null) {
 				action = UNKNOWN;

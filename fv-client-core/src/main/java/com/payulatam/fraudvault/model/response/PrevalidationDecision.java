@@ -48,7 +48,8 @@ public enum PrevalidationDecision {
 	}
 
 	/**
-	 * Gets the PrevalidationDecision by id, if there isn't a PrevalidationDecision with the sent key, 
+	 * Gets the PrevalidationDecision by id, if there isn't a PrevalidationDecision with the sent
+	 * key,
 	 * so the UNKNOWN value is returned
 	 * 
 	 * @param id the id.
@@ -56,9 +57,12 @@ public enum PrevalidationDecision {
 	 */
 	public static PrevalidationDecision getById(Integer id) {
 
-		PrevalidationDecision decision = prevalidationDecisionMap.get(id);
-		if (decision == null) {
-			decision = PrevalidationDecision.UNKNOWN;
+		PrevalidationDecision decision = null;
+		if (id != null) {
+			decision = prevalidationDecisionMap.get(id);
+			if (decision == null) {
+				decision = PrevalidationDecision.UNKNOWN;
+			}
 		}
 		return decision;
 	}

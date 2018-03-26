@@ -53,9 +53,12 @@ public enum GeneralAnswerCode {
 	 */
 	public static GeneralAnswerCode getById(Integer id) {
 
-		GeneralAnswerCode error = answerCodesMap.get(id);
-		if (error == null) {
-			return UNKNOWN;
+		GeneralAnswerCode error = null;
+		if (id != null) {
+			error = answerCodesMap.get(id);
+			if (error == null) {
+				error = UNKNOWN;
+			}
 		}
 		return error;
 	}

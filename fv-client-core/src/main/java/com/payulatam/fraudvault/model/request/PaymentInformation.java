@@ -1,6 +1,5 @@
 package com.payulatam.fraudvault.model.request;
 
-import org.apache.commons.lang3.StringUtils;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;
 
@@ -97,7 +96,8 @@ public class PaymentInformation {
 		 * @return the PaymentInformationBuilder
 		 */
 		public PaymentInformationBuilder expirationDate(String cardExpirationMonth, String cardExpirationYear) {
-			if (StringUtils.isNotEmpty(cardExpirationMonth) && StringUtils.isNotEmpty(cardExpirationYear)) {
+			if (cardExpirationMonth != null  && !cardExpirationMonth.isEmpty() &&
+					cardExpirationYear != null && !cardExpirationYear.isEmpty()) {
 				if (validateInputsExpirationDate(cardExpirationMonth, cardExpirationYear)) {
 					int yearNumber = Integer.parseInt(cardExpirationYear);
 					if (yearNumber > 2000) {

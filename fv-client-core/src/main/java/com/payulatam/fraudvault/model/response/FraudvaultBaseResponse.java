@@ -25,6 +25,12 @@ public class FraudvaultBaseResponse {
 
 	/** The general error code. */
 	private GeneralErrorCode generalErrorCode;
+	
+	/** The answer code value. */
+	private Integer generalAnswerCodeValue;
+	
+	/** The general error code value. */
+	private Integer generalErrorCodeValue;
 
 	/** Text describing the happened error. */
 	private String generalErrorMessage;

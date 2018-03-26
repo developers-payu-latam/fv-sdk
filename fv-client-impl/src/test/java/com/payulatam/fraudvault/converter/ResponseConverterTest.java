@@ -51,7 +51,8 @@ public class ResponseConverterTest {
 		Assert.assertNotNull(responseDetail);
 		Assert.assertEquals(fvPrevalidation.getTransactionId(), responseDetail.getTransactionId());
 		Assert.assertEquals(fvPrevalidation.getEvaluationTime(),responseDetail.getEvaluationTime());
-		Assert.assertEquals(fvPrevalidation.getErrorCode(), responseDetail.getErrorCode());
+		Assert.assertEquals(fvPrevalidation.getErrorCodeIdValue(), responseDetail.getErrorCode());
+		Assert.assertEquals(fvPrevalidation.getErrorCode(), ErrorCode.getById(responseDetail.getErrorCode()));
 		Assert.assertEquals(fvPrevalidation.getErrorMessage(), responseDetail.getErrorMessage());
 		Assert.assertEquals(fvPrevalidation.getIspName(), responseDetail.getIspName());
 		Assert.assertEquals(fvPrevalidation.getSimilarTransactionsNumber(),responseDetail.getSimilarTransactionsNumber());
@@ -75,9 +76,13 @@ public class ResponseConverterTest {
 		List<Action> actions = fvPrevalidation.getActions();
 		Assert.assertNotNull(actions);
 		Assert.assertEquals(actions.get(0), Action.getByKey(responseDetail.getActions().get(0)));
+		Assert.assertNotNull(fvPrevalidation.getActionsKeysValues());
+		Assert.assertEquals(fvPrevalidation.getActionsKeysValues().get(0), responseDetail.getActions().get(0));
 
-		Assert.assertNotNull(fvPrevalidation.getAlerts());
+		Assert.assertNotNull(fvPrevalidation.getAlerts());		
 		Assert.assertEquals(fvPrevalidation.getAlerts().get(0), Alert.getByKey(responseDetail.getAlerts().get(0)));
+		Assert.assertNotNull(fvPrevalidation.getAlertsKeysValues());
+		Assert.assertEquals(fvPrevalidation.getAlertsKeysValues().get(0), responseDetail.getAlerts().get(0));
 
 		IpAddressLocation ipAddressLocation = fvPrevalidation.getIpAddressLocation();
 		Assert.assertNotNull(ipAddressLocation);
@@ -131,6 +136,7 @@ public class ResponseConverterTest {
 		Assert.assertEquals(fvPosvalidation.getTransactionId(), responseDetail.getTransactionId());
 		Assert.assertEquals(fvPosvalidation.getEvaluationTime(),
 				responseDetail.getEvaluationTime());
+		Assert.assertEquals(fvPosvalidation.getErrorCodeIdValue(), responseDetail.getErrorCode());
 		Assert.assertEquals(fvPosvalidation.getErrorCode(), ErrorCode.getById(responseDetail.getErrorCode()));
 		Assert.assertEquals(fvPosvalidation.getErrorMessage(), responseDetail.getErrorMessage());
 		Assert.assertEquals(fvPosvalidation.getSimilarTransactionsNumber(),
@@ -139,6 +145,8 @@ public class ResponseConverterTest {
 		List<Action> actions = fvPosvalidation.getActions();
 		Assert.assertNotNull(actions);
 		Assert.assertEquals(actions.get(0), Action.getByKey(responseDetail.getActions().get(0)));
+		Assert.assertNotNull(fvPosvalidation.getActionsKeysValues());
+		Assert.assertEquals(fvPosvalidation.getActionsKeysValues().get(0), responseDetail.getActions().get(0));
 
 		Assert.assertNotNull(fvPosvalidation.getTriggeredRules());
 		TriggeredRule triggeredRule = fvPosvalidation.getTriggeredRules().get(0);

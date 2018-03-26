@@ -8,8 +8,6 @@ package com.payulatam.fraudvault.model.response;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
-
 /**
  * The alerts generated in the Fraudvault prevalidation/posvalidation process.
  * 
@@ -63,7 +61,7 @@ public enum Alert {
 	public static Alert getByKey(String key) {
 
 		Alert alert = null;
-		if (StringUtils.isNotBlank(key)) {
+		if (key != null && !key.isEmpty()) {
 			alert = alertsMap.get(key);
 			if (alert == null) {
 				alert = UNKNOWN;

@@ -40,11 +40,14 @@ public final class ResponseConverter {
 				.builder();
 		EvaluationSoapWrapper evaluation = response.getEvaluation();
 		if (evaluation != null) {
+			prevalidationBuilder.decisionIdValue(evaluation.getDecision());
 			prevalidationBuilder.decision(PrevalidationDecision.getById(evaluation.getDecision()));
 			EvaluationDetailSoapWrapper detail = evaluation.getDetail();
 			if (detail != null) {
 				prevalidationBuilder.actions(getActions(detail.getActions()))
+						.actionsKeysValues(detail.getActions())
 						.alerts(getAlerts(detail.getAlerts()))
+						.alertsKeysValues(detail.getAlerts())
 						.errorMessage(detail.getErrorMessage())
 						.evaluationTime(detail.getEvaluationTime())
 						.ipAddressLocation(detail.getIpAddressLocation())
@@ -53,6 +56,7 @@ public final class ResponseConverter {
 						.similarTransactionsNumber(detail.getSimilarTransactionsNumber())
 						.transactionId(detail.getTransactionId()).triggeredRules(detail.getRules())
 						.validatedWithCreditBureau(detail.isValidatedWithCreditBureau());
+				prevalidationBuilder.errorCodeIdValue(detail.getErrorCode());
 				if (detail.getErrorCode() != null) {
 					prevalidationBuilder.errorCode(ErrorCode.getById(detail.getErrorCode()));
 				}
@@ -75,11 +79,13 @@ public final class ResponseConverter {
 			}
 		}
 		FraudvaultPrevalidationResponse prevalidation = prevalidationBuilder.build();
+		prevalidation.setGeneralErrorCodeValue(response.getGeneralErrorCode());
 		if (response.getGeneralErrorCode() != null) {
 			prevalidation.setGeneralErrorCode(GeneralErrorCode.getById(response.getGeneralErrorCode()));
 		}
 		prevalidation.setGeneralErrorMessage(response.getGeneralErrorMessage());
 		prevalidation.setResponseDate(response.getResponseDate());
+		prevalidation.setGeneralAnswerCodeValue(response.getGeneralAnswerCode());
 		if (response.getGeneralAnswerCode() != null) {
 			prevalidation.setGeneralAnswerCode(GeneralAnswerCode.getById(response.getGeneralAnswerCode()));
 		}
@@ -134,25 +140,30 @@ public final class ResponseConverter {
 				.builder();
 		EvaluationSoapWrapper evaluation = response.getEvaluation();
 		if (evaluation != null) {
+			posvalidationBuilder.decisionIdValue(evaluation.getDecision());
 			posvalidationBuilder.decision(PosvalidationDecision.getById(evaluation.getDecision()));
 			EvaluationDetailSoapWrapper detail = evaluation.getDetail();
 			if (detail != null) {
 				posvalidationBuilder.actions(getActions(detail.getActions()))
+						.actionsKeysValues(detail.getActions())
 						.errorMessage(detail.getErrorMessage())
 						.evaluationTime(detail.getEvaluationTime())
 						.similarTransactionsNumber(detail.getSimilarTransactionsNumber())
 						.transactionId(detail.getTransactionId()).triggeredRules(detail.getRules());
+				posvalidationBuilder.errorCodeIdValue(detail.getErrorCode());
 				if (detail.getErrorCode() != null) {
 					posvalidationBuilder.errorCode(ErrorCode.getById(detail.getErrorCode()));
 				}
 			}
 		}
 		FraudvaultPosvalidationResponse posvalidation = posvalidationBuilder.build();
+		posvalidation.setGeneralErrorCodeValue(response.getGeneralErrorCode());
 		if (response.getGeneralErrorCode() != null) {
 			posvalidation.setGeneralErrorCode(GeneralErrorCode.getById(response.getGeneralErrorCode()));
 		}
 		posvalidation.setGeneralErrorMessage(response.getGeneralErrorMessage());
 		posvalidation.setResponseDate(response.getResponseDate());
+		posvalidation.setGeneralAnswerCodeValue(response.getGeneralAnswerCode());
 		if (response.getGeneralAnswerCode() != null) {
 			posvalidation.setGeneralAnswerCode(GeneralAnswerCode.getById(response.getGeneralAnswerCode()));
 		}
@@ -175,6 +186,7 @@ public final class ResponseConverter {
 				.getQueryStateResponseContent();
 		if (queryResponseContent != null) {
 			queryStateBuilder.transactionId(queryResponseContent.getTransactionId());
+			queryStateBuilder.stateIdValue(queryResponseContent.getState());
 			queryStateBuilder.state(TransactionState.getById(queryResponseContent.getState()));
 			if (queryResponseContent.getAnswerCode() != null) {
 				queryStateBuilder.answerCode(GeneralAnswerCode.getById(queryResponseContent.getAnswerCode()));
@@ -182,12 +194,16 @@ public final class ResponseConverter {
 			queryStateBuilder.errorMessage(queryResponseContent.getErrorMessage());
 		}
 		FraudvaultStateQueryResponse queryState = queryStateBuilder.build();
+		queryState.setGeneralErrorCodeValue(response.getGeneralErrorCode());
 		if (response.getGeneralErrorCode() != null) {
 			queryState.setGeneralErrorCode(GeneralErrorCode.getById(response.getGeneralErrorCode()));
 		}
 		queryState.setGeneralErrorMessage(response.getGeneralErrorMessage());
 		queryState.setResponseDate(response.getResponseDate());
-		queryState.setGeneralAnswerCode(GeneralAnswerCode.getById(response.getGeneralAnswerCode()));
+		queryState.setGeneralAnswerCodeValue(response.getGeneralAnswerCode());
+		if (response.getGeneralAnswerCode() != null) {
+			queryState.setGeneralAnswerCode(GeneralAnswerCode.getById(response.getGeneralAnswerCode()));
+		}
 		return queryState;
 	}
 
@@ -213,13 +229,17 @@ public final class ResponseConverter {
 			updateStateBuilder.errorMessage(updateResponseContent.getErrorMessage());
 		}
 		FraudvaultStateUpdateResponse updateState = updateStateBuilder.build();
+		updateState.setGeneralErrorCodeValue(response.getGeneralErrorCode());
 		if (response.getGeneralErrorCode() != null) {
 			updateState.setGeneralErrorCode(GeneralErrorCode.getById(response.getGeneralErrorCode()));
 		}
 		updateState.setGeneralErrorMessage(response.getGeneralErrorMessage());
 		updateState.setResponseDate(response.getResponseDate());
-		updateState
-				.setGeneralAnswerCode(GeneralAnswerCode.getById(response.getGeneralAnswerCode()));
+		updateState.setGeneralAnswerCodeValue(response.getGeneralAnswerCode());
+		if (response.getGeneralAnswerCode() != null) {
+			updateState.setGeneralAnswerCode(
+					GeneralAnswerCode.getById(response.getGeneralAnswerCode()));
+		}
 		return updateState;
 	}
 

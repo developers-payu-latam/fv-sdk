@@ -22,8 +22,11 @@ public class FraudvaultStateQueryResponse extends FraudvaultBaseResponse{
 	/** The identifier of the transaction. */
 	private String transactionId;
 
-	/** The identifier of the transaction state. */
+	/** The transaction state. */
 	private TransactionState state;
+	
+	/** The identifier of the transaction state. */
+	private Integer stateIdValue;
 
 	/** The answer code. */
 	private GeneralAnswerCode answerCode;

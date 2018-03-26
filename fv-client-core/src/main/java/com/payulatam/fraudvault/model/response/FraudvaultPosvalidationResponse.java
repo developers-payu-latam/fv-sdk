@@ -24,6 +24,9 @@ public class FraudvaultPosvalidationResponse extends FraudvaultBaseResponse{
 	/**
 	 * The decision made by Fraudvault. **/
 	private PosvalidationDecision decision;
+	
+	/** The decision id value. */
+	private Integer decisionIdValue;
 
 	/** The identifier of the transaction. */
 	private String transactionId;
@@ -33,6 +36,9 @@ public class FraudvaultPosvalidationResponse extends FraudvaultBaseResponse{
 	 * to transaction data that match with the rules profiles configuration in Fraudvault.
 	 */
 	private List<Action> actions;
+	
+	/** A list with the keys of the actions triggered in the execution of rules.*/
+	private List<String> actionsKeysValues;
 
 	/** Number of fraudulent transactions that are similar to the current transaction. */
 	private Integer similarTransactionsNumber;
@@ -49,6 +55,9 @@ public class FraudvaultPosvalidationResponse extends FraudvaultBaseResponse{
 
 	/** The error code if there is an error when evaluating a transaction. */
 	private ErrorCode errorCode;
+	
+	/** The error code identifier value if there is an error when evaluating a transaction. */
+	private Integer errorCodeIdValue;
 
 	/** Error message associated with the evaluation of the transaction. */
 	private String errorMessage;

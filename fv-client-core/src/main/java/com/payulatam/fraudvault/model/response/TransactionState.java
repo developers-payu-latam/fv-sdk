@@ -59,7 +59,7 @@ public enum TransactionState {
 	}
 
 	/**
-	 * Gets the TransactionState by id, if there isn't a TransactionState with the sent key, 
+	 * Gets the TransactionState by id, if there isn't a TransactionState with the sent key,
 	 * so the UNKNOWN value is returned
 	 * 
 	 * @param id the id.
@@ -67,9 +67,12 @@ public enum TransactionState {
 	 */
 	public static TransactionState getById(Integer id) {
 
-		TransactionState state = statesMap.get(id);
-		if (state == null) {
-			state = TransactionState.UNKNOWN;
+		TransactionState state = null;
+		if (id != null) {
+			state = statesMap.get(id);
+			if (state == null) {
+				state = TransactionState.UNKNOWN;
+			}
 		}
 		return state;
 	}

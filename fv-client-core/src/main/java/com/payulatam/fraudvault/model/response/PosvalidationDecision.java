@@ -48,17 +48,20 @@ public enum PosvalidationDecision {
 	}
 
 	/**
-	 * Gets the PosvalidationDecision by id, if there isn't a PosvalidationDecision with the sent key, 
-	 * so the UNKNOWN value is returned
+	 * Gets the PosvalidationDecision by id, if there isn't a PosvalidationDecision with the sent
+	 * key, so the UNKNOWN value is returned
 	 * 
 	 * @param id the id.
 	 * @return the PosvalidationDecision
 	 */
 	public static PosvalidationDecision getById(Integer id) {
 
-		PosvalidationDecision decision = posvalidationDecisionMap.get(id);
-		if (decision == null) {
-			decision = PosvalidationDecision.UNKNOWN;
+		PosvalidationDecision decision = null;
+		if (id != null) {
+			decision = posvalidationDecisionMap.get(id);
+			if (decision == null) {
+				decision = PosvalidationDecision.UNKNOWN;
+			}
 		}
 		return decision;
 	}
