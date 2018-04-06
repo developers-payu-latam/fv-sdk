@@ -18,6 +18,12 @@ import lombok.Builder;
 @Builder
 public class FraudvaultClientConfiguration {
 
+	/** Indicates if the client should ignore invalid certificates to call .
+	 * WARNING: This feature should be used only for testing porpoises!!!
+	 * */
+	@Builder.Default
+	private boolean ignoreInvalidCertificates = false;
+
 	/** URL of the Fraudvault service. */
 	private String fraudvaultServiceBaseUrl;
 

@@ -5,6 +5,8 @@
  */
 package com.payulatam.fraudvault.client.retrofit;
 
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.concurrent.TimeUnit;
 
 import org.simpleframework.xml.convert.AnnotationStrategy;
@@ -36,13 +38,15 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.simplexml.SimpleXmlConverterFactory;
 
+import javax.net.ssl.*;
+
 /**
  * Retrofit implementation of the Fraudvault client.
- * 
+ *
  * @author <a href="mailto:claudia.rodriguez@payulatam.com">Claudia Jimena Rodriguez</a>
  */
 public class RetrofitFraudvaultClient extends FraudvaultClient {
-	
+
 	/** Class logger. */
 	private static final Logger logger = LoggerFactory.getLogger(RetrofitFraudvaultClient.class);
 
@@ -60,10 +64,13 @@ public class RetrofitFraudvaultClient extends FraudvaultClient {
 	 */
 	private IFraudvaultService createService() {
 
-		OkHttpClient httpClient = new OkHttpClient.Builder()
+		final OkHttpClient.Builder builder = new OkHttpClient.Builder()
 				.readTimeout(getClientConfiguration().getReadTimeoutInMillis(), TimeUnit.MILLISECONDS)
-				.connectTimeout(getClientConfiguration().getConnectionTimeoutInMillis(), TimeUnit.MILLISECONDS)
-				.build();
+				.connectTimeout(getClientConfiguration().getConnectionTimeoutInMillis(), TimeUnit.MILLISECONDS);
+        if (super.getClientConfiguration().isIgnoreInvalidCertificates()) {
+            configureIgnoringCertificates(builder);
+		}
+		OkHttpClient httpClient = builder.build();
 		Retrofit retrofit = new Retrofit.Builder()
 				.baseUrl(adaptBaseUrl())
 				.client(httpClient)
@@ -72,8 +79,45 @@ public class RetrofitFraudvaultClient extends FraudvaultClient {
 
 		return retrofit.create(IFraudvaultService.class);
 	}
-	
-	/** Adapt the API base URL for retrofit ensuring it ends with / because the Base URLs should always end in / 
+
+    private static void configureIgnoringCertificates(OkHttpClient.Builder builder) {
+        logger.error("Ignoring SSL certificates, this should be used only for testing porpoises!");
+        try {
+            final SSLContext sslContext = SSLContext.getInstance("SSL");
+            final TrustManager[] trustAllCerts = new TrustManager[]{ new X509TrustAllCertificates() };
+            sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
+            final SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
+
+            builder.sslSocketFactory(sslSocketFactory, (X509TrustManager) trustAllCerts[0])
+                    .hostnameVerifier(new HostnameVerifier() {
+                        @Override
+                        public boolean verify(String s, SSLSession sslSession) {
+                            return true;
+                        }
+                    });
+        } catch (Exception e) {
+            logger.error("Error configuring OkHttpClient ignoring certificates", e);
+        }
+    }
+
+    private static class X509TrustAllCertificates implements X509TrustManager {
+        @Override
+        public void checkClientTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
+
+        }
+
+        @Override
+        public void checkServerTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
+
+        }
+
+        @Override
+        public X509Certificate[] getAcceptedIssuers() {
+            return new X509Certificate[0];
+        }
+    }
+
+    /** Adapt the API base URL for retrofit ensuring it ends with / because the Base URLs should always end in /
 	 * thus the endpoints values which are relative paths will correctly append themselves to the base. */
 	private String adaptBaseUrl(){
 		
