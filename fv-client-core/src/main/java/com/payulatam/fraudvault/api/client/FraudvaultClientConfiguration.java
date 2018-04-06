@@ -35,6 +35,9 @@ public class FraudvaultClientConfiguration {
 	@Builder.Default
 	private Integer readTimeoutInMillis  = 10000;
 
+	@Builder.Default
+	private boolean logHttpRequest = false;
+
 	/** The Fraudvault authentication credentials. */
 	private Credentials credentials;
 

@@ -15,6 +15,8 @@ import com.payulatam.fraudvault.api.client.exception.XmlConversionException;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Represents the response with the Fraudvault prevalidation result that can be mapped with the XML response structure.
@@ -25,6 +27,9 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class PrevalidationResponseSoapWrapper extends FraudvaultBaseResponseSoapWrapper {
+
+	/** Class logger. */
+	private static final Logger logger = LoggerFactory.getLogger(PrevalidationResponseSoapWrapper.class);
 
 	@Element(name = "respuesta-maf-prevalidacion", required = false)
 	private EvaluationSoapWrapper evaluation;
@@ -41,6 +46,7 @@ public class PrevalidationResponseSoapWrapper extends FraudvaultBaseResponseSoap
 	public static PrevalidationResponseSoapWrapper fromXml(String xml) throws XmlConversionException {
 
 		try {
+			logger.debug(xml);
 			return serializer.read(PrevalidationResponseSoapWrapper.class, xml);
 		} catch (Exception e) {
 			throw new XmlConversionException(

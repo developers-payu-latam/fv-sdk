@@ -9,6 +9,7 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.concurrent.TimeUnit;
 
+import okhttp3.logging.HttpLoggingInterceptor;
 import org.simpleframework.xml.convert.AnnotationStrategy;
 import org.simpleframework.xml.core.Persister;
 import org.slf4j.Logger;
@@ -67,9 +68,15 @@ public class RetrofitFraudvaultClient extends FraudvaultClient {
 		final OkHttpClient.Builder builder = new OkHttpClient.Builder()
 				.readTimeout(getClientConfiguration().getReadTimeoutInMillis(), TimeUnit.MILLISECONDS)
 				.connectTimeout(getClientConfiguration().getConnectionTimeoutInMillis(), TimeUnit.MILLISECONDS);
+
         if (super.getClientConfiguration().isIgnoreInvalidCertificates()) {
             configureIgnoringCertificates(builder);
 		}
+
+		if (super.getClientConfiguration().isLogHttpRequest()){
+        	configureHttpLogging(builder);
+		}
+
 		OkHttpClient httpClient = builder.build();
 		Retrofit retrofit = new Retrofit.Builder()
 				.baseUrl(adaptBaseUrl())
@@ -78,6 +85,12 @@ public class RetrofitFraudvaultClient extends FraudvaultClient {
 				.build();
 
 		return retrofit.create(IFraudvaultService.class);
+	}
+
+	private static void configureHttpLogging(OkHttpClient.Builder builder) {
+		HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
+		logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+		builder.addInterceptor(logging);
 	}
 
     private static void configureIgnoringCertificates(OkHttpClient.Builder builder) {
