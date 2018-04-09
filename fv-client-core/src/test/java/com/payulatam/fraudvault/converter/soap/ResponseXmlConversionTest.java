@@ -13,16 +13,11 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
+import com.payulatam.fraudvault.model.response.*;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import com.payulatam.fraudvault.api.client.exception.XmlConversionException;
-import com.payulatam.fraudvault.model.response.ControlListsInformation;
-import com.payulatam.fraudvault.model.response.HeuristicAnalysis;
-import com.payulatam.fraudvault.model.response.IpAddressLocation;
-import com.payulatam.fraudvault.model.response.IssuerBank;
-import com.payulatam.fraudvault.model.response.ListMatch;
-import com.payulatam.fraudvault.model.response.TriggeredRule;
 import com.payulatam.fraudvault.model.response.soap.*;
 
 /**
@@ -252,18 +247,21 @@ public class ResponseXmlConversionTest {
 		Assert.assertNotNull(triggeredRules);
 		Assert.assertEquals(triggeredRules.size(), 2);
 		TriggeredRule rule1 = triggeredRules.get(0);
+        TriggeredRuleCondition triggeredRuleCondition1=rule1.obtainTriggeredRuleCondition(0);
 		Assert.assertEquals(rule1.getRuleName(), "regla_test [MONITOREAR]");
-		Assert.assertEquals(rule1.getTransactionFieldName(), "Documento del comprador");
-		Assert.assertEquals(rule1.getRuleConfiguredValue(), "12345678");
-		Assert.assertEquals(rule1.getTransactionFieldValue(), "12345678");
-		Assert.assertEquals(rule1.getOperator(), "IGUAL");
+
+		Assert.assertEquals(triggeredRuleCondition1.getTransactionFieldName(), "Documento del comprador");
+		Assert.assertEquals(triggeredRuleCondition1.getRuleConfiguredValue(), "12345678");
+		Assert.assertEquals(triggeredRuleCondition1.getTransactionFieldValue(), "12345678");
+		Assert.assertEquals(triggeredRuleCondition1.getOperator(), "IGUAL");
 
 		TriggeredRule rule2 = triggeredRules.get(1);
+        TriggeredRuleCondition triggeredRuleCondition2=rule2.obtainTriggeredRuleCondition(0);
 		Assert.assertEquals(rule2.getRuleName(), "det_cedula");
-		Assert.assertEquals(rule2.getTransactionFieldName(), "Documento Comprador");
-		Assert.assertEquals(rule2.getRuleConfiguredValue(), "53140140");
-		Assert.assertEquals(rule2.getTransactionFieldValue(), "53140140");
-		Assert.assertEquals(rule2.getOperator(), "IGUAL");
+		Assert.assertEquals(triggeredRuleCondition2.getTransactionFieldName(), "Documento Comprador");
+		Assert.assertEquals(triggeredRuleCondition2.getRuleConfiguredValue(), "53140140");
+		Assert.assertEquals(triggeredRuleCondition2.getTransactionFieldValue(), "53140140");
+		Assert.assertEquals(triggeredRuleCondition2.getOperator(), "IGUAL");
 	}
 
 	/**

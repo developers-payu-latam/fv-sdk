@@ -5,47 +5,82 @@
  */
 package com.payulatam.fraudvault.model.response;
 
-import org.simpleframework.xml.Element;
-
 import lombok.Data;
+import org.simpleframework.xml.Element;
+import org.simpleframework.xml.ElementList;
+
+import java.util.List;
 
 /**
- * Encapsulates the data of a triggered rule associated with a rules profile in Fraudvault.
- * 
+ * Encapsulates the data of the triggered rules associated with a rules profile in Fraudvault.
+ *
  * @author <a href="mailto:claudia.rodriguez@payulatam.com">Claudia Jimena Rodriguez</a>
  */
 @Data
 public class TriggeredRule {
 
-	/**
-	 * The name of the rule that has been triggered.
-	 */
-	@Element(name = "nombre-regla", required = false)
-	private String ruleName;
-	
-	/**
-	 * The name of the field/attribute in the transaction data that produced the trigger of the rule.
-	 */
-	@Element(name = "nombre", required = false)
-	private String transactionFieldName;
-	
-	/**
-	 * The value of the field in the transaction data that produced the trigger of the rule.
-	 */
-	@Element(name = "valor", required = false)
-	private String transactionFieldValue;
-	
-	/**
-	 * The configured value in the rule definition.
-	 */
-	@Element(name = "valor-configuracion", required = false)
-	private String ruleConfiguredValue;
-	
-	/**
-	 * The configured operator in the rule definition, the operator is applied to the configured 
-	 * value in the rule definition and the specific transaction field value.
-	 */
-	@Element(name = "operador", required = false)
-	private String operator;
+    /**
+     * The name of the rule that has been triggered.
+     */
+    @Element(name = "nombre-regla", required = false)
+    private String ruleName;
+
+    /**
+     * The names of the rules.
+     */
+    @ElementList(inline = true, entry = "nombre", required = false)
+    private List<String> names;
+
+    /**
+     * The values of the rules.
+     */
+    @ElementList(inline = true, entry = "valor", required = false)
+    private List<String> values;
+
+    /**
+     * The configuration values of the rules.
+     */
+    @ElementList(inline = true, entry = "valor-configuracion", required = false)
+    private List<String> configurationValues;
+
+    /**
+     * The operators of the rules.
+     */
+    @ElementList(inline = true, entry = "operador", required = false)
+    private List<String> operators;
+
+    /**
+     * <p>
+     * Gets {@link TriggeredRuleCondition} using list of names, values, operators, and configuration values contained in
+     * the current rule.
+     * </p>
+     * <p>
+     * For example the index <code>0</code> obtains a {@link TriggeredRuleCondition} that contains the data of names [0],
+     * values[0],configurationValues[0], and operators[0].
+     * </p>
+     *
+     * @param index the position of a rule condition in the list of rule conditions.
+     * @return the rule condition located in the given position.
+     * @throws IllegalArgumentException when the given index is invalid.
+     */
+    public TriggeredRuleCondition obtainTriggeredRuleCondition(Integer index) {
+        TriggeredRuleCondition triggeredRuleCondition;
+        try {
+            triggeredRuleCondition = TriggeredRuleCondition.builder().transactionFieldName(names.get(index)).
+                    transactionFieldValue(values.get(index)).ruleConfiguredValue(configurationValues.get(index)).operator(operators.get(index)).build();
+        } catch (Exception ex) {
+            throw new IllegalArgumentException("Invalid index", ex);
+        }
+        return triggeredRuleCondition;
+    }
+
+    /**
+     * Obtains the size of the triggered rule conditions.
+     *
+     * @return size of the triggered rule conditions .
+     */
+    public Integer obtainSizeOfTriggeredRuleConditions() {
+        return (names != null ? names.size() : 0);
+    }
 
 }

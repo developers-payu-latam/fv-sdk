@@ -2,16 +2,11 @@ package com.payulatam.fraudvault.model.response.soap;
 
 import java.util.List;
 
+import com.payulatam.fraudvault.model.response.*;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Path;
 import org.simpleframework.xml.Root;
-
-import com.payulatam.fraudvault.model.response.ControlListsInformation;
-import com.payulatam.fraudvault.model.response.HeuristicAnalysis;
-import com.payulatam.fraudvault.model.response.IpAddressLocation;
-import com.payulatam.fraudvault.model.response.IssuerBank;
-import com.payulatam.fraudvault.model.response.TriggeredRule;
 
 import lombok.Data;
 
