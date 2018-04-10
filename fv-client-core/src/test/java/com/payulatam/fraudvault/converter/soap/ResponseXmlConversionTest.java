@@ -247,7 +247,7 @@ public class ResponseXmlConversionTest {
 		Assert.assertNotNull(triggeredRules);
 		Assert.assertEquals(triggeredRules.size(), 2);
 		TriggeredRule rule1 = triggeredRules.get(0);
-        TriggeredRuleCondition triggeredRuleCondition1=rule1.obtainTriggeredRuleCondition(0);
+        TriggeredRuleCondition triggeredRuleCondition1=rule1.getTriggeredRuleCondition(0);
 		Assert.assertEquals(rule1.getRuleName(), "regla_test [MONITOREAR]");
 
 		Assert.assertEquals(triggeredRuleCondition1.getTransactionFieldName(), "Documento del comprador");
@@ -256,7 +256,7 @@ public class ResponseXmlConversionTest {
 		Assert.assertEquals(triggeredRuleCondition1.getOperator(), "IGUAL");
 
 		TriggeredRule rule2 = triggeredRules.get(1);
-        TriggeredRuleCondition triggeredRuleCondition2=rule2.obtainTriggeredRuleCondition(0);
+        TriggeredRuleCondition triggeredRuleCondition2=rule2.getTriggeredRuleCondition(0);
 		Assert.assertEquals(rule2.getRuleName(), "det_cedula");
 		Assert.assertEquals(triggeredRuleCondition2.getTransactionFieldName(), "Documento Comprador");
 		Assert.assertEquals(triggeredRuleCondition2.getRuleConfiguredValue(), "53140140");

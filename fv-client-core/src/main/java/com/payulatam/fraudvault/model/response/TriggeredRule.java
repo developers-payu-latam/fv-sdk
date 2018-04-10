@@ -63,7 +63,7 @@ public class TriggeredRule {
      * @return the rule condition located in the given position.
      * @throws IllegalArgumentException when the given index is invalid.
      */
-    public TriggeredRuleCondition obtainTriggeredRuleCondition(Integer index) {
+    public TriggeredRuleCondition getTriggeredRuleCondition(Integer index) {
         TriggeredRuleCondition triggeredRuleCondition;
         try {
             triggeredRuleCondition = TriggeredRuleCondition.builder().transactionFieldName(names.get(index)).
@@ -79,7 +79,7 @@ public class TriggeredRule {
      *
      * @return size of the triggered rule conditions .
      */
-    public Integer obtainSizeOfTriggeredRuleConditions() {
+    public Integer getSizeOfTriggeredRuleConditions() {
         return (names != null ? names.size() : 0);
     }
 
