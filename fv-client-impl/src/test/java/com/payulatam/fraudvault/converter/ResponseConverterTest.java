@@ -104,7 +104,7 @@ public class ResponseConverterTest {
 		Assert.assertNotNull(fvPrevalidation.getTriggeredRules());
 		TriggeredRule triggeredRule = fvPrevalidation.getTriggeredRules().get(0);
 		TriggeredRule triggeredRuleResponse = responseDetail.getRules().get(0);
-		TriggeredRuleCondition triggeredRuleCondition=triggeredRuleResponse.obtainTriggeredRuleCondition(0);
+		TriggeredRuleCondition triggeredRuleCondition=triggeredRuleResponse.getTriggeredRuleCondition(0);
 		Assert.assertEquals(triggeredRuleCondition.getTransactionFieldName(),
 				triggeredRuleCondition.getTransactionFieldName());
 		Assert.assertEquals(triggeredRuleCondition.getTransactionFieldValue(),
@@ -152,9 +152,9 @@ public class ResponseConverterTest {
 
 		Assert.assertNotNull(fvPosvalidation.getTriggeredRules());
 		TriggeredRule triggeredRule = fvPosvalidation.getTriggeredRules().get(0);
-		TriggeredRuleCondition triggeredRuleCondition=triggeredRule.obtainTriggeredRuleCondition(0);
+		TriggeredRuleCondition triggeredRuleCondition=triggeredRule.getTriggeredRuleCondition(0);
 		TriggeredRule triggeredRuleResponse = responseDetail.getRules().get(0);
-		TriggeredRuleCondition triggeredRuleConditionResponse=triggeredRuleResponse.obtainTriggeredRuleCondition(0);
+		TriggeredRuleCondition triggeredRuleConditionResponse=triggeredRuleResponse.getTriggeredRuleCondition(0);
 
 		Assert.assertEquals(triggeredRuleCondition.getTransactionFieldName(),
 				triggeredRuleConditionResponse.getTransactionFieldName());
