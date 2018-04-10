@@ -6,6 +6,7 @@
 package com.payulatam.fraudvault.converter;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -103,13 +104,14 @@ public class ResponseConverterTest {
 		Assert.assertNotNull(fvPrevalidation.getTriggeredRules());
 		TriggeredRule triggeredRule = fvPrevalidation.getTriggeredRules().get(0);
 		TriggeredRule triggeredRuleResponse = responseDetail.getRules().get(0);
-		Assert.assertEquals(triggeredRule.getTransactionFieldName(),
-				triggeredRuleResponse.getTransactionFieldName());
-		Assert.assertEquals(triggeredRule.getTransactionFieldValue(),
-				triggeredRuleResponse.getTransactionFieldValue());
-		Assert.assertEquals(triggeredRule.getOperator(), triggeredRuleResponse.getOperator());
-		Assert.assertEquals(triggeredRule.getRuleConfiguredValue(),
-				triggeredRuleResponse.getRuleConfiguredValue());
+		TriggeredRuleCondition triggeredRuleCondition=triggeredRuleResponse.getTriggeredRuleCondition(0);
+		Assert.assertEquals(triggeredRuleCondition.getTransactionFieldName(),
+				triggeredRuleCondition.getTransactionFieldName());
+		Assert.assertEquals(triggeredRuleCondition.getTransactionFieldValue(),
+				triggeredRuleCondition.getTransactionFieldValue());
+		Assert.assertEquals(triggeredRuleCondition.getOperator(), triggeredRuleCondition.getOperator());
+		Assert.assertEquals(triggeredRuleCondition.getRuleConfiguredValue(),
+				triggeredRuleCondition.getRuleConfiguredValue());
 		Assert.assertEquals(triggeredRule.getRuleName(), triggeredRuleResponse.getRuleName());
 	}
 
@@ -150,14 +152,17 @@ public class ResponseConverterTest {
 
 		Assert.assertNotNull(fvPosvalidation.getTriggeredRules());
 		TriggeredRule triggeredRule = fvPosvalidation.getTriggeredRules().get(0);
+		TriggeredRuleCondition triggeredRuleCondition=triggeredRule.getTriggeredRuleCondition(0);
 		TriggeredRule triggeredRuleResponse = responseDetail.getRules().get(0);
-		Assert.assertEquals(triggeredRule.getTransactionFieldName(),
-				triggeredRuleResponse.getTransactionFieldName());
-		Assert.assertEquals(triggeredRule.getTransactionFieldValue(),
-				triggeredRuleResponse.getTransactionFieldValue());
-		Assert.assertEquals(triggeredRule.getOperator(), triggeredRuleResponse.getOperator());
-		Assert.assertEquals(triggeredRule.getRuleConfiguredValue(),
-				triggeredRuleResponse.getRuleConfiguredValue());
+		TriggeredRuleCondition triggeredRuleConditionResponse=triggeredRuleResponse.getTriggeredRuleCondition(0);
+
+		Assert.assertEquals(triggeredRuleCondition.getTransactionFieldName(),
+				triggeredRuleConditionResponse.getTransactionFieldName());
+		Assert.assertEquals(triggeredRuleCondition.getTransactionFieldValue(),
+				triggeredRuleConditionResponse.getTransactionFieldValue());
+		Assert.assertEquals(triggeredRuleCondition.getOperator(), triggeredRuleConditionResponse.getOperator());
+		Assert.assertEquals(triggeredRuleCondition.getRuleConfiguredValue(),
+				triggeredRuleConditionResponse.getRuleConfiguredValue());
 		Assert.assertEquals(triggeredRule.getRuleName(), triggeredRuleResponse.getRuleName());
 	}
 
@@ -249,11 +254,11 @@ public class ResponseConverterTest {
 
 		List<TriggeredRule> rules = new ArrayList<>();
 		TriggeredRule rule = new TriggeredRule();
-		rule.setTransactionFieldName("documento_comprador");
-		rule.setTransactionFieldValue("20444444");
 		rule.setRuleName("rule_test_post");
-		rule.setRuleConfiguredValue("20444444");
-		rule.setOperator("IGUAL");
+		rule.setNames(new ArrayList<String>(Arrays.asList("documento_comprador")));
+		rule.setValues(new ArrayList<String>(Arrays.asList("20444444")));
+		rule.setConfigurationValues(new ArrayList<String>(Arrays.asList("20444444")));
+		rule.setOperators(new ArrayList<String>(Arrays.asList("IGUAL")));
 		rules.add(rule);
 		detail.setRules(rules);
 
@@ -309,11 +314,11 @@ public class ResponseConverterTest {
 		detail.setIssuerBank(issuerBank);
 		List<TriggeredRule> rules = new ArrayList<>();
 		TriggeredRule rule = new TriggeredRule();
-		rule.setTransactionFieldName("telefono_oficina");
-		rule.setTransactionFieldValue("4111111");
+		rule.setNames(new ArrayList<String>(Arrays.asList("telefono_oficina")));
+		rule.setValues(new ArrayList<String>(Arrays.asList("4111111")));
+		rule.setConfigurationValues(new ArrayList<String>(Arrays.asList("4111111")));
+		rule.setOperators(new ArrayList<String>(Arrays.asList("IGUAL")));
 		rule.setRuleName("rule_test");
-		rule.setRuleConfiguredValue("4111111");
-		rule.setOperator("IGUAL");
 		rules.add(rule);
 		detail.setRules(rules);
 		detail.setSimilarTransactionsNumber(7);

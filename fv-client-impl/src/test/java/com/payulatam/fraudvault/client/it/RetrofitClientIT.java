@@ -259,8 +259,9 @@ public class RetrofitClientIT {
 
 		if (response.getTriggeredRules() != null) {
 			for (TriggeredRule filter : response.getTriggeredRules()) {
-				logger.debug("-- filters: " + filter.getRuleName() + " - " + filter.getTransactionFieldName()
-				+ " - " + filter.getTransactionFieldValue() + " - " + filter.getRuleConfiguredValue()+ " - " + filter.getOperator());
+				TriggeredRuleCondition triggeredRuleCondition = filter.getTriggeredRuleCondition(0);
+				logger.debug("-- filters: " + filter.getRuleName() + " - " + triggeredRuleCondition.getTransactionFieldName()
+				+ " - " + triggeredRuleCondition.getTransactionFieldValue() + " - " + triggeredRuleCondition.getRuleConfiguredValue()+ " - " + triggeredRuleCondition.getOperator());
 			}
 		}
 
@@ -383,9 +384,10 @@ public class RetrofitClientIT {
 		}
 		if (response.getTriggeredRules() != null) {
 			for (TriggeredRule filter : response.getTriggeredRules()) {
+				TriggeredRuleCondition triggeredRuleCondition = filter.getTriggeredRuleCondition(0);
 				logger.debug("-- filters: " + filter.getRuleName() + " - "
-						+ filter.getTransactionFieldName() + " - "
-						+ filter.getTransactionFieldValue());
+						+ triggeredRuleCondition.getTransactionFieldName() + " - "
+						+ triggeredRuleCondition.getTransactionFieldValue());
 			}
 		}
 	}

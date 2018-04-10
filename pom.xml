@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.payulatam.fraudvault</groupId>
 	<artifactId>fv-sdk</artifactId>
-	<version>0.2.0</version>
+	<version>0.2.1</version>
 	<packaging>pom</packaging>
 	<modules>
 		<module>fv-client-core</module>

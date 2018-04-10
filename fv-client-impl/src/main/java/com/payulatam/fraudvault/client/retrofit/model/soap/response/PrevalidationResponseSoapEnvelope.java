@@ -31,4 +31,11 @@ public class PrevalidationResponseSoapEnvelope {
 			@Namespace(reference = "http://ws.maf.pagosonline.com/", prefix = "ns3") })
 	private ResponseBodyData prevalidationResponseBodyData;
 
+	public ResponseBodyData getPrevalidationResponseBodyData() {
+		return prevalidationResponseBodyData;
+	}
+
+	public void setPrevalidationResponseBodyData(ResponseBodyData prevalidationResponseBodyData) {
+		this.prevalidationResponseBodyData = prevalidationResponseBodyData;
+	}
 }
