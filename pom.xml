@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
@@ -5,10 +6,47 @@
 	<artifactId>fv-sdk</artifactId>
 	<version>0.2.1</version>
 	<packaging>pom</packaging>
+
+	<name>com.payulatam.fraudvault:fv-sdk</name>
+	<description>Java API for the integration with the Fraudvault services</description>
+	<url><!-- TODO a pointer to your project website for more,-->http://www.example.com/example-application</url>
+
+	<licenses>
+		<license>
+			<name>The Apache License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+		</license>
+	</licenses>
+
+	<developers>
+		<developer>
+			<name>Claudia Jimena Rodríguez P.</name>
+			<email>claudia.rodriguez@payulatam.com</email>
+			<organization>PayU</organization>
+			<organizationUrl>https://www.payulatam.com</organizationUrl>
+		</developer>
+	</developers>
+
+	<scm>
+		<connection><!-- TODO the read only connection -->scm:git:git://bitbucket.org/simpligility/ossrh-pipeline-demo.git</connection>
+		<developerConnection><!-- TODO read and write access connection details -->scm:git:ssh://bitbucket.org:simpligility/ossrh-pipeline-demo.git</developerConnection>
+		<url><!-- TODO the URL for a web front end to your SCM system -->https://bitbucket.org/simpligility/ossrh-pipeline-demo/src</url>
+	</scm>
+
 	<modules>
 		<module>fv-client-core</module>
 		<module>fv-client-impl</module>
 	</modules>
+
+	<!-- to deploy to the OSSRH Nexus Repository Manager with the Nexus Staging 
+		Maven plugin -->
+	<distributionManagement>
+		<snapshotRepository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+		</snapshotRepository>
+	</distributionManagement>
+
 	<build>
 		<plugins>
 			<plugin>
@@ -24,7 +62,7 @@
 			</plugin>
 			<plugin>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.17</version>
+				<version>2.20</version>
 				<configuration>
 					<skip>false</skip>
 					<useFile>false</useFile>
@@ -80,7 +118,7 @@
 				<plugins>
 					<plugin>
 						<artifactId>maven-failsafe-plugin</artifactId>
-						<version>2.17</version>
+						<version>2.20</version>
 						<configuration>
 							<skipTests>false</skipTests>
 							<includes>
@@ -96,6 +134,76 @@
 							</execution>
 						</executions>
 					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
+			<id>release</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-source-plugin</artifactId>
+						<version>3.0.0</version>
+						<executions>
+							<execution>
+								<id>attach-sources</id>
+								<goals>
+									<goal>jar-no-fork</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-javadoc-plugin</artifactId>
+						<version>3.0.0</version>
+						<executions>
+							<execution>
+								<id>attach-javadocs</id>
+								<goals>
+									<goal>jar</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-gpg-plugin</artifactId>
+						<version>1.6</version>
+						<executions>
+							<execution>
+								<id>sign-artifacts</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>sign</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+
+					<!-- To deploy to the OSSRH Nexus Repository Manager with the Nexus 
+						Staging Maven plugin, perform the deployment with the usage of the release 
+						profile with: "mvn clean deploy -P release". Snapshot deployment are performed 
+						when the version ends in -SNAPSHOT, simply run "mvn clean deploy" on the 
+						project. SNAPSHOT versions are not synchronized to the Central Repository -->
+				<!-- 	<plugin>
+						<groupId>org.sonatype.plugins</groupId>
+						The Nexus Staging Maven Plugin is the recommended way to deploy your components 
+							to OSSRH and release them to the Central Repository.
+						<artifactId>nexus-staging-maven-plugin</artifactId>
+						<version>1.6.8</version>
+						<extensions>true</extensions>
+						<configuration>
+							<serverId>ossrh</serverId>
+							<nexusUrl>https://oss.sonatype.org/</nexusUrl>
+							The nexus-staging-maven-plugin is configured <autoReleaseAfterClose>false</autoReleaseAfterClose> 
+								to enable manual inspection of the staging repository BEFORE it is released 
+								to central. To deploy to OSSRH and release to the Central Repository in one 
+								step, set autoReleaseAfterClose:true
+							<autoReleaseAfterClose>true</autoReleaseAfterClose>
+						</configuration>
+					</plugin> -->
 				</plugins>
 			</build>
 		</profile>
