@@ -23,13 +23,15 @@ With this SDK you will be able to integrate the Fraudvault services in a quick a
 You can use this SDK if you are using Java version 7+  
 
 The Fraudvault service is running on the HTTPS protocol allowing a secure transmission of data, so in order to connecting, you need to add our SSL certificate to the Java CA certificate(cacerts) store.  
+  
 - First, get the certificate file: contact us or get it through a request to our server in your browser. Save the file to the **jdk\jre\lib\security** folder or any other folder if you prefer.  
  
-- Second, add the certificate to the JVM used by your application: At an administrator command prompt that is set to your JDK's **jdk\jre\lib\security** folder, run the following command to import the certificate:
+- Second, add the certificate to the JVM used by your application: At an administrator command prompt that is set to your JDK's **jdk\jre\lib\security** folder, run the following command to import the certificate:  
 	
     ````
 	    keytool -keystore cacerts -importcert -alias **<the_alias_you_desire_to_use>** -file **<the_path_for_the_certificate_file>**
-    ````
+    ````  
+
 Replace **<the_alias_you_desire_to_use>** with the appropriate value, only if you want to set an alias for the certificate, otherwise you don't need to specify the **-alias** parameter.  
 Replace **<the_path_for_the_certificate_file>** with the path of the certificate; if you save the file to the **jdk\jre\lib\security** folder, you don't need to set the full path, only the name with the extension of the file. If you save the file in other location you have to set the full path of the certificate file.  
 
