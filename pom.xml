@@ -2,13 +2,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.payulatam.fraudvault</groupId>
-	<artifactId>fv-sdk</artifactId>
-	<version>0.2.1</version>
+	<groupId>${project.parent.group-id}</groupId>
+	<artifactId>${project.parent.artifact-id}</artifactId>
+	<version>1.0.0</version>
 	<packaging>pom</packaging>
 
-	<name>com.payulatam.fraudvault:fv-sdk</name>
-	<description>Java API for the integration with the Fraudvault services</description>
+	<name>${project.groupId}:${project.artifactId}</name>
+	<description>Java API for the integration with the fraud detection service</description>
 	<url><!-- TODO a pointer to your project website for more,-->http://www.example.com/example-application</url>
 
 	<licenses>
@@ -34,8 +34,8 @@
 	</scm>
 
 	<modules>
-		<module>fv-client-core</module>
-		<module>fv-client-impl</module>
+		<module>fd-client-core</module>
+		<module>fd-client-impl</module>
 	</modules>
 
 	<!-- to deploy to the OSSRH Nexus Repository Manager with the Nexus Staging 
@@ -137,6 +137,13 @@
 				</plugins>
 			</build>
 		</profile>
+		
+		<profile>
+			<id>release-fcontrol</id>
+			<properties>
+				<project.parent.group-id>com.payulatam.fcontrol</project.parent.group-id>
+			</properties>
+		</profile>
 		<profile>
 			<id>release</id>
 			<build>
@@ -214,5 +221,7 @@
 		<project.reporting.outputEncoding>ISO-8859-1</project.reporting.outputEncoding>
 		<retrofit.version>2.3.0</retrofit.version>
 		<converter.simplexml.version>2.3.0</converter.simplexml.version>
+		<project.parent.group-id>com.payulatam.fraudvault</project.parent.group-id>
+		<project.parent.artifact-id>fd-sdk</project.parent.artifact-id>
 	</properties>
 </project>

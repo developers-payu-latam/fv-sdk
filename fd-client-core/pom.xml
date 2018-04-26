@@ -1,0 +1,56 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>${project.parent.group-id}</groupId>
+		<artifactId>${project.parent.artifact-id}</artifactId>
+		<version>1.0.0</version>
+	</parent>
+	<artifactId>fd-client-core</artifactId>
+	<packaging>jar</packaging>
+	
+	<name>${project.groupId}:${project.artifactId}</name>
+	<description>Core module with the model and definition of the Java API for the integration with the fraud detection service</description>
+	<url><!-- TODO a pointer to your project website for more,-->http://www.example.com/example-application</url>
+
+	<licenses>
+		<license>
+			<name>The Apache License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+		</license>
+	</licenses>
+
+	<developers>
+		<developer>
+			<name>Claudia Jimena Rodríguez P.</name>
+			<email>claudia.rodriguez@payulatam.com</email>
+			<organization>PayU</organization>
+			<organizationUrl>https://www.payulatam.com</organizationUrl>
+		</developer>
+	</developers>
+
+	<scm>
+		<connection><!-- TODO the read only connection -->scm:git:git://bitbucket.org/simpligility/ossrh-pipeline-demo.git</connection>
+		<developerConnection><!-- TODO read and write access connection details -->scm:git:ssh://bitbucket.org:simpligility/ossrh-pipeline-demo.git</developerConnection>
+		<url><!-- TODO the URL for a web front end to your SCM system -->https://bitbucket.org/simpligility/ossrh-pipeline-demo/src</url>
+	</scm>
+	
+	<dependencies>
+		<dependency>
+			<groupId>org.simpleframework</groupId>
+			<artifactId>simple-xml</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.testng</groupId>
+			<artifactId>testng</artifactId>
+		</dependency>
+	</dependencies>
+</project>
